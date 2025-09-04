@@ -80,7 +80,6 @@ const App: React.FC = () => {
           <StartScreen
             onStartGame={handleStartGame}
             onShowLeaderboard={() => setCurrentScreen('leaderboard')}
-            onDebugResult={handleDebugResult}
           />
         );
       

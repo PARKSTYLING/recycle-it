@@ -70,16 +70,30 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
   return (
     <div className="h-screen w-screen flex flex-col relative overflow-hidden">
-      {/* Background Image - Forest */}
-      <div 
-        className="absolute inset-0 w-full h-full z-0"
-        style={{
-          backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
+      {/* Background Video */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="/images/UI/Kvinde_med_bier.jpg"
+      >
+        <source 
+          src={isMobile ? "/videos/UI/background_movie_mobile.mp4" : "/videos/UI/background_movie_desktop.mp4"} 
+          type="video/mp4" 
+        />
+        {/* Fallback image if video fails to load */}
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+      </video>
       
       {/* Content Container */}
       <div className="flex flex-col h-full relative z-10 px-4 py-6">
@@ -102,23 +116,23 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             className="bg-white rounded-3xl shadow-2xl p-6 mx-auto w-full max-w-sm"
           >
             {/* Header */}
-            <h1 className="text-2xl font-bold text-center mb-4" style={{ color: '#48723a' }}>
+            <h1 className="text-4xl md:text-5xl font-black text-center mb-4 w-full leading-tight" style={{ color: '#48723a' }}>
               {strings.wellPlayed}
             </h1>
             
             {/* Score Section */}
             <div className="text-center mb-4">
-              <p className="text-sm mb-2" style={{ color: '#48723a' }}>
+              <p className="text-base mb-2" style={{ color: '#48723a' }}>
                 {strings.youCollected}
               </p>
-              <div className="text-4xl font-bold mb-2" style={{ color: '#48723a' }}>
-                {finalScore} DKK
+              <div className="text-5xl font-bold mb-2" style={{ color: '#48723a' }}>
+                {finalScore} <span className="font-black">DKK</span>
               </div>
             </div>
             
             {/* Prize Information */}
             <div className="text-center">
-              <p className="text-sm leading-relaxed" style={{ color: '#48723a' }}>
+              <p className="text-base leading-relaxed" style={{ color: '#48723a' }}>
                 {strings.raffleText}
               </p>
             </div>
@@ -132,12 +146,12 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             className="bg-white rounded-3xl shadow-2xl p-6 mx-auto w-full max-w-sm"
           >
             {/* Question */}
-            <h2 className="text-lg font-bold text-center mb-3" style={{ color: '#48723a' }}>
+            <h2 className="text-xl font-bold text-center mb-3" style={{ color: '#48723a' }}>
               {strings.wantToSee}
             </h2>
             
             {/* Daily Winner Info */}
-            <p className="text-sm text-center mb-6" style={{ color: '#48723a' }}>
+            <p className="text-base text-center mb-6" style={{ color: '#48723a' }}>
               {strings.dailyWinner}
             </p>
             
@@ -160,22 +174,26 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
               </button>
             </div>
           </motion.div>
+          
+          {/* Discount Banner - moved here, below the buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="rounded-3xl shadow-2xl p-4 mx-auto w-full max-w-sm relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 100%)',
+              backdropFilter: 'blur(8px)'
+            }}
+          >
+            <h3 className="text-2xl font-bold text-center mb-2" style={{ color: '#48723a' }}>
+              {strings.discountBanner}
+            </h3>
+            <p className="text-base text-center leading-relaxed" style={{ color: '#48723a' }}>
+              {strings.discountDetails}
+            </p>
+          </motion.div>
         </div>
-        
-        {/* Bottom Discount Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="bg-black/70 backdrop-blur-sm rounded-t-3xl p-4 mt-4"
-        >
-          <h3 className="text-xl font-bold text-white text-center mb-2">
-            {strings.discountBanner}
-          </h3>
-          <p className="text-sm text-white text-center leading-relaxed">
-            {strings.discountDetails}
-          </p>
-        </motion.div>
         
         {/* Debug indicator */}
         {userEmail === 'debug@test.com' && (

@@ -8,13 +8,11 @@ import { gameAPI } from '../lib/supabase';
 interface StartScreenProps {
   onStartGame: () => void;
   onShowLeaderboard: () => void;
-  onDebugResult: () => void;
 }
 
 export const StartScreen: React.FC<StartScreenProps> = ({ 
   onStartGame, 
-  onShowLeaderboard, 
-  onDebugResult 
+  onShowLeaderboard
 }) => {
   const strings = localization.getStrings();
   const [isMobile, setIsMobile] = useState(false);
@@ -346,15 +344,6 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             {strings.scoreboard}
           </button>
 
-          {/* Debug Button - only show in development */}
-          {process.env.NODE_ENV === 'development' && (
-            <button
-              onClick={onDebugResult}
-              className="w-full bg-red-500 text-white py-2 rounded-xl font-medium text-sm hover:bg-red-600 transition-all"
-            >
-              🐛 Debug Result Screen
-            </button>
-          )}
         </div>
         </div>
       </div>
