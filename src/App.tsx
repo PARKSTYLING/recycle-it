@@ -105,11 +105,9 @@ const App: React.FC = () => {
         return (
           <ResultScreen
             finalScore={finalScore}
-            isFirstPlay={isFirstPlay}
             userEmail={userEmail}
             onPlayAgain={handleStartGame}
             onShowLeaderboard={() => setCurrentScreen('leaderboard')}
-            onBackToStart={() => setCurrentScreen('start')}
           />
         );
       

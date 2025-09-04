@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { RotateCcw, Trophy, Mail, Star, Gift, Award } from 'lucide-react';
 import { localization } from '../lib/localization';
 import { motion } from 'framer-motion';
 
 interface ResultScreenProps {
   finalScore: number;
-  isFirstPlay: boolean;
   userEmail: string;
   onPlayAgain: () => void;
   onShowLeaderboard: () => void;
-  onBackToStart: () => void;
 }
 
 export const ResultScreen: React.FC<ResultScreenProps> = ({
   finalScore,
-  isFirstPlay,
   userEmail,
   onPlayAgain,
-  onShowLeaderboard,
-  onBackToStart
+  onShowLeaderboard
 }) => {
   const strings = localization.getStrings();
   const [isMobile, setIsMobile] = useState(false);
