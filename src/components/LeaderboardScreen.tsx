@@ -50,6 +50,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
       console.log('Fetching leaderboard...', { venueId });
       const response = await gameAPI.getLeaderboard(venueId);
       console.log('Leaderboard response:', response);
+      console.log('Debug info:', response.debugInfo);
       setLeaderboard(response.leaderboard || []);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
