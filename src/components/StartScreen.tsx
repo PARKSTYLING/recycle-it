@@ -23,6 +23,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
   const [currentLocale, setCurrentLocale] = useState('da');
   const [showTerms, setShowTerms] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -85,6 +86,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
     
     // If no errors, save user data and start the game
     if (Object.keys(newErrors).length === 0) {
+      setIsLoading(true);
       try {
         // Map Danish role text to database constraint values
         const getUserTypeForDatabase = (danishRole: string): string => {
@@ -122,6 +124,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         // You could show an error message to the user here
         // For now, we'll still start the game to not block the user experience
         onStartGame();
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -322,15 +326,27 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           {/* Primary button */}
           <button
             onClick={handleStartGame}
-            className="w-full text-white py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 active:scale-95"
+            disabled={isLoading}
+            className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-all transform ${
+              isLoading 
+                ? 'opacity-75 cursor-not-allowed' 
+                : 'hover:scale-105 active:scale-95'
+            }`}
             style={{ 
-              backgroundColor: '#77a224',
+              backgroundColor: isLoading ? '#6a8f1f' : '#77a224',
               ':hover': { backgroundColor: '#6a8f1f' }
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#6a8f1f'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#77a224'}
+            onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#6a8f1f')}
+            onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#77a224')}
           >
-            {strings.readySetRecycle}
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <span>Loading...</span>
+              </div>
+            ) : (
+              strings.readySetRecycle
+            )}
           </button>
 
           {/* Secondary button */}

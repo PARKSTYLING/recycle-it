@@ -41,25 +41,29 @@ const App: React.FC = () => {
       setUserEmail(userData.email);
     }
     
-    // Start play session if we have a user ID
-    if (userId || userData?.userId) {
-      try {
-        const playData = {
-          user_id: userId || userData!.userId,
-          device_type: 'mobile' as const
-        };
-        
-        const result = await gameAPI.startPlay(playData);
-        setPlaySessionId(result.play_session_id);
-        console.log('Play session started:', result);
-      } catch (error) {
-        console.error('Failed to start play session:', error);
-        // Continue with game even if session start fails
-      }
-    }
-    
+    // Move to countdown screen immediately for better UX
     setCurrentScreen('countdown');
     setIsFirstPlay(false);
+    
+    // Start play session in background (non-blocking)
+    if (userId || userData?.userId) {
+      // Use setTimeout to make it non-blocking
+      setTimeout(async () => {
+        try {
+          const playData = {
+            user_id: userId || userData!.userId,
+            device_type: 'mobile' as const
+          };
+          
+          const result = await gameAPI.startPlay(playData);
+          setPlaySessionId(result.play_session_id);
+          console.log('Play session started:', result);
+        } catch (error) {
+          console.error('Failed to start play session:', error);
+          // Continue with game even if session start fails
+        }
+      }, 0);
+    }
   };
 
   const handleGameEnd = async (finalScore: number, stats: any) => {
