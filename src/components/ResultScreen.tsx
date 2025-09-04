@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { RotateCcw, Trophy, Mail, Star, Gift, Award } from 'lucide-react';
 import { localization } from '../lib/localization';
@@ -22,6 +22,19 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   onBackToStart
 }) => {
   const strings = localization.getStrings();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Trigger confetti animation
@@ -56,17 +69,27 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   }, []);
 
   return (
-    <div 
-      className="h-screen w-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        minHeight: '100vh',
-        minWidth: '100vw'
-      }}
-    >
+    <div className="h-screen w-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source 
+          src={`/videos/UI/${isMobile ? 'background_movie_mobile.mp4' : 'background_movie_desktop.mp4'}`} 
+          type="video/mp4" 
+        />
+        {/* Fallback image if video fails to load */}
+        <img 
+          src="/images/UI/Kvinde_med_bier.jpg" 
+          alt="Background" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </video>
+      
       {/* Enhanced dark overlay with gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/60 z-10"></div>
       
