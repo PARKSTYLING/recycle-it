@@ -8,6 +8,7 @@ import { GameplayScreen } from './components/GameplayScreen';
 import { ResultScreen } from './components/ResultScreen';
 import { LeaderboardScreen } from './components/LeaderboardScreen';
 import { DailyCapScreen } from './components/DailyCapScreen';
+import { gameAPI } from './lib/supabase';
 
 type Screen = 'attract' | 'prestart' | 'start' | 'countdown' | 'gameplay' | 'result' | 'leaderboard' | 'dailyCap';
 
@@ -18,6 +19,9 @@ const App: React.FC = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [isFirstPlay, setIsFirstPlay] = useState(true);
   const [userEmail, setUserEmail] = useState('');
+  const [playSessionId, setPlaySessionId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [gameStats, setGameStats] = useState<any>(null);
 
   const resetTimer = useIdleTimer(() => {
     setCurrentScreen('attract');
@@ -27,15 +31,66 @@ const App: React.FC = () => {
     resetTimer();
   }, [currentScreen, resetTimer]);
 
-  const handleStartGame = () => {
+  const handleStartGame = async (userData?: { userId: string; email: string }) => {
     setScore(0);
     setTimeLeft(60);
+    
+    // Store user data if provided
+    if (userData) {
+      setUserId(userData.userId);
+      setUserEmail(userData.email);
+    }
+    
+    // Start play session if we have a user ID
+    if (userId || userData?.userId) {
+      try {
+        const playData = {
+          user_id: userId || userData!.userId,
+          device_type: 'mobile' as const
+        };
+        
+        const result = await gameAPI.startPlay(playData);
+        setPlaySessionId(result.play_session_id);
+        console.log('Play session started:', result);
+      } catch (error) {
+        console.error('Failed to start play session:', error);
+        // Continue with game even if session start fails
+      }
+    }
+    
     setCurrentScreen('countdown');
     setIsFirstPlay(false);
   };
 
-  const handleGameEnd = () => {
-    setFinalScore(score);
+  const handleGameEnd = async (finalScore: number, stats: any) => {
+    setFinalScore(finalScore);
+    setGameStats(stats);
+    
+    // Save game data to Supabase if we have a play session
+    if (playSessionId) {
+      try {
+        const endData = {
+          play_session_id: playSessionId,
+          final_total_dkk: finalScore,
+          items_caught: stats.itemsCaught || 0,
+          correct_catches: stats.correctCatches || 0,
+          wrong_catches: stats.wrongCatches || 0,
+          duration_ms: 40000 // 40 seconds game duration
+        };
+        
+        const result = await gameAPI.endPlay(endData);
+        console.log('Game data saved:', result);
+        
+        // Update first play status based on API response
+        if (result.is_first_play) {
+          setIsFirstPlay(true);
+        }
+      } catch (error) {
+        console.error('Failed to save game data:', error);
+        // Continue to result screen even if save fails
+      }
+    }
+    
     setCurrentScreen('result');
   };
 
@@ -46,7 +101,7 @@ const App: React.FC = () => {
   const handleTimeChange = (newTime: number) => {
     setTimeLeft(newTime);
     if (newTime <= 0) {
-      handleGameEnd();
+      // GameCanvas will call onGameEnd with proper parameters
     }
   };
 

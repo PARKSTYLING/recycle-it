@@ -6,7 +6,7 @@ import { CustomDropdown } from './CustomDropdown';
 import { gameAPI } from '../lib/supabase';
 
 interface StartScreenProps {
-  onStartGame: () => void;
+  onStartGame: (userData?: { userId: string; email: string }) => void;
   onShowLeaderboard: () => void;
 }
 
@@ -112,8 +112,11 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         const result = await gameAPI.upsertUser(userData);
         console.log('User saved successfully:', result);
         
-        // Start the game after successful save
-        onStartGame();
+        // Start the game after successful save with user data
+        onStartGame({
+          userId: result.user_id || result.id,
+          email: email.trim()
+        });
       } catch (error) {
         console.error('Failed to save user data:', error);
         // You could show an error message to the user here
