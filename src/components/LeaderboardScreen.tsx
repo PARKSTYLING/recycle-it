@@ -44,6 +44,8 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
       console.log('Leaderboard response:', response);
       console.log('Debug info:', response.debugInfo);
       console.log('Response keys:', Object.keys(response));
+      console.log('Response message:', response.message);
+      console.log('Response timestamp:', response.timestamp);
       
       // If no data, show test data for debugging
       if (!response.leaderboard || response.leaderboard.length === 0) {
