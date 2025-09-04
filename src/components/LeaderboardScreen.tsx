@@ -37,10 +37,21 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
 
   const fetchLeaderboard = async () => {
     try {
-      const { leaderboard: data } = await gameAPI.getLeaderboard(venueId);
-      setLeaderboard(data);
+      console.log('Fetching leaderboard...', { venueId });
+      const response = await gameAPI.getLeaderboard(venueId);
+      console.log('Leaderboard response:', response);
+      setLeaderboard(response.leaderboard || []);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
+      // Set test data for debugging if API fails
+      setLeaderboard([
+        {
+          rank: 1,
+          name_masked: "Test User",
+          score_dkk: 150,
+          timestamp: new Date().toISOString()
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -53,6 +64,11 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
     const interval = setInterval(fetchLeaderboard, 10000);
     return () => clearInterval(interval);
   }, [venueId]);
+
+  // Debug: Log when leaderboard changes
+  useEffect(() => {
+    console.log('Leaderboard updated:', leaderboard);
+  }, [leaderboard]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {

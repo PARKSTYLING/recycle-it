@@ -31,6 +31,15 @@ Deno.serve(async (req: Request) => {
     const startOfDayUTC = new Date(startOfDay.getTime() - (startOfDay.getTimezoneOffset() * 60000));
     const endOfDayUTC = new Date(endOfDay.getTime() - (endOfDay.getTimezoneOffset() * 60000));
     
+    // First, let's check if play_sessions table exists and has any data
+    const { data: allSessions, error: allSessionsError } = await supabase
+      .from('play_sessions')
+      .select('*')
+      .limit(5);
+    
+    console.log('All play_sessions (first 5):', allSessions);
+    console.log('All sessions error:', allSessionsError);
+
     const query = supabase
       .from('play_sessions')
       .select(`
@@ -52,8 +61,12 @@ Deno.serve(async (req: Request) => {
     const { data: scores, error } = await query;
 
     if (error) {
+      console.error('Database query error:', error);
       throw error;
     }
+
+    console.log('Raw scores from database:', scores);
+    console.log('Date range:', { startOfDayUTC: startOfDayUTC.toISOString(), endOfDayUTC: endOfDayUTC.toISOString() });
 
     // Mask names (first name + initial)
     const leaderboard = scores?.map((score, index) => {
