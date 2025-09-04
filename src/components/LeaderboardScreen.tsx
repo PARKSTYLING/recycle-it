@@ -39,17 +39,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
 
   const fetchLeaderboard = async () => {
     try {
-      console.log('Fetching leaderboard...', { venueId });
       const response = await gameAPI.getLeaderboard(venueId);
-      console.log('Leaderboard response:', response);
-      console.log('Debug info:', response.debugInfo);
-      console.log('Response keys:', Object.keys(response));
-      console.log('Response message:', response.message);
-      console.log('Response timestamp:', response.timestamp);
       
       // If no data, show test data for debugging
       if (!response.leaderboard || response.leaderboard.length === 0) {
-        console.log('No leaderboard data, showing test data');
         setLeaderboard([
           {
             rank: 1,
@@ -68,7 +61,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
         setLeaderboard(response.leaderboard);
       }
     } catch (error) {
-      console.error('Failed to fetch leaderboard:', error);
       // Set test data for debugging if API fails
       setLeaderboard([
         {
@@ -91,10 +83,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
     return () => clearInterval(interval);
   }, [venueId]);
 
-  // Debug: Log when leaderboard changes
-  useEffect(() => {
-    console.log('Leaderboard updated:', leaderboard);
-  }, [leaderboard]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -146,12 +134,8 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
             <ArrowLeft size={20} className="md:w-6 md:h-6" />
           </button>
           <div className="text-gray-800">
-            <h1 className="text-xl md:text-2xl font-bold">{strings.topPlayers}</h1>
-            <p className="text-xs md:text-sm text-gray-600">{strings.today}</p>
-            {/* Debug info display */}
-            <div className="mt-2 text-xs text-gray-500">
-              Debug: Check console for database info
-            </div>
+            <h1 className="text-xl md:text-2xl font-bold">Dagens topspillere</h1>
+            <p className="text-xs md:text-sm text-gray-600">I dag</p>
           </div>
         </div>
 

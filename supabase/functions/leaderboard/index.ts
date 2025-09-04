@@ -11,7 +11,6 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
-  console.log('Leaderboard function called at:', new Date().toISOString());
 
   try {
     const supabase = createClient(
@@ -22,45 +21,29 @@ Deno.serve(async (req: Request) => {
     const url = new URL(req.url);
     const venueId = url.searchParams.get('venue_id');
 
-    // Get today's top 10 scores
-    // Get today in Danish timezone (Europe/Copenhagen)
+    // Get today's top 10 scores - using Danish timezone (Europe/Copenhagen)
     const now = new Date();
+    
+    // Convert to Danish timezone
     const danishTime = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Copenhagen"}));
-    const startOfDay = new Date(danishTime.getFullYear(), danishTime.getMonth(), danishTime.getDate());
-    const endOfDay = new Date(danishTime.getFullYear(), danishTime.getMonth(), danishTime.getDate() + 1);
+    const today = new Date(danishTime.getFullYear(), danishTime.getMonth(), danishTime.getDate());
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
     
     // Convert back to UTC for database query
-    const startOfDayUTC = new Date(startOfDay.getTime() - (startOfDay.getTimezoneOffset() * 60000));
-    const endOfDayUTC = new Date(endOfDay.getTime() - (endOfDay.getTimezoneOffset() * 60000));
+    const startOfDay = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString();
+    const endOfDay = new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString();
     
-    // First, let's check if play_sessions table exists and has any data
-    const { data: allSessions, error: allSessionsError } = await supabase
-      .from('play_sessions')
-      .select('*')
-      .limit(5);
-    
-    console.log('All play_sessions (first 5):', allSessions);
-    console.log('All sessions error:', allSessionsError);
-
-    // If no data, let's try a simpler query without date filtering
-    const { data: allSessionsNoFilter, error: allSessionsNoFilterError } = await supabase
-      .from('play_sessions')
-      .select('*')
-      .limit(10);
-    
-    console.log('All play_sessions (no date filter):', allSessionsNoFilter);
-    console.log('All sessions no filter error:', allSessionsNoFilterError);
 
     const query = supabase
       .from('play_sessions')
       .select(`
         final_total_dkk,
         started_at,
+        played_on,
         users!inner(name)
       `)
-      .eq('is_valid_daily', true)
-      .gte('started_at', startOfDayUTC.toISOString())
-      .lt('started_at', endOfDayUTC.toISOString())
+      .gte('played_on', startOfDay)
+      .lt('played_on', endOfDay)
       .order('final_total_dkk', { ascending: false })
       .order('started_at', { ascending: true })
       .limit(10);
@@ -72,12 +55,8 @@ Deno.serve(async (req: Request) => {
     const { data: scores, error } = await query;
 
     if (error) {
-      console.error('Database query error:', error);
       throw error;
     }
-
-    console.log('Raw scores from database:', scores);
-    console.log('Date range:', { startOfDayUTC: startOfDayUTC.toISOString(), endOfDayUTC: endOfDayUTC.toISOString() });
 
     // Mask names (first name + initial)
     let leaderboard = scores?.map((score, index) => {
@@ -96,7 +75,6 @@ Deno.serve(async (req: Request) => {
 
     // If no real data, return test data for debugging
     if (leaderboard.length === 0) {
-      console.log('No real data found, returning test data');
       leaderboard = [
         {
           rank: 1,
@@ -113,31 +91,11 @@ Deno.serve(async (req: Request) => {
       ];
     }
 
-    // Add debug info to response
-    const debugInfo = {
-      allSessionsCount: allSessions?.length || 0,
-      allSessionsError: allSessionsError?.message || null,
-      allSessionsNoFilterCount: allSessionsNoFilter?.length || 0,
-      allSessionsNoFilterError: allSessionsNoFilterError?.message || null,
-      scoresCount: scores?.length || 0,
-      dateRange: {
-        startOfDayUTC: startOfDayUTC.toISOString(),
-        endOfDayUTC: endOfDayUTC.toISOString()
-      },
-      timestamp: new Date().toISOString(),
-      message: "Debug info from leaderboard Edge Function"
-    };
-
-    console.log('Debug info:', debugInfo);
-
     const response = { 
       leaderboard, 
-      debugInfo,
-      message: "Leaderboard API working - check debugInfo for database details",
+      message: "Leaderboard API working",
       timestamp: new Date().toISOString()
     };
-    
-    console.log('Returning response:', response);
     
     return new Response(
       JSON.stringify(response),
@@ -145,12 +103,10 @@ Deno.serve(async (req: Request) => {
     );
 
   } catch (error) {
-    console.error('Leaderboard function error:', error);
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        leaderboard: [],
-        debugInfo: { error: error.message, timestamp: new Date().toISOString() }
+        leaderboard: []
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
