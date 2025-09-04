@@ -35,15 +35,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const testDatabase = async () => {
-    try {
-      console.log('Testing database...');
-      const response = await gameAPI.testDatabase();
-      console.log('Database test response:', response);
-    } catch (error) {
-      console.error('Database test failed:', error);
-    }
-  };
+  // Removed testDatabase function since test-db doesn't exist
 
   const fetchLeaderboard = async () => {
     try {
@@ -51,7 +43,28 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
       const response = await gameAPI.getLeaderboard(venueId);
       console.log('Leaderboard response:', response);
       console.log('Debug info:', response.debugInfo);
-      setLeaderboard(response.leaderboard || []);
+      console.log('Response keys:', Object.keys(response));
+      
+      // If no data, show test data for debugging
+      if (!response.leaderboard || response.leaderboard.length === 0) {
+        console.log('No leaderboard data, showing test data');
+        setLeaderboard([
+          {
+            rank: 1,
+            name_masked: "Test Player",
+            score_dkk: 150,
+            timestamp: new Date().toISOString()
+          },
+          {
+            rank: 2,
+            name_masked: "Demo User", 
+            score_dkk: 120,
+            timestamp: new Date().toISOString()
+          }
+        ]);
+      } else {
+        setLeaderboard(response.leaderboard);
+      }
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
       // Set test data for debugging if API fails
@@ -133,13 +146,10 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
           <div className="text-gray-800">
             <h1 className="text-xl md:text-2xl font-bold">{strings.topPlayers}</h1>
             <p className="text-xs md:text-sm text-gray-600">{strings.today}</p>
-            {/* Debug button */}
-            <button
-              onClick={testDatabase}
-              className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-xs"
-            >
-              Test DB
-            </button>
+            {/* Debug info display */}
+            <div className="mt-2 text-xs text-gray-500">
+              Debug: Check console for database info
+            </div>
           </div>
         </div>
 

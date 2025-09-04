@@ -106,19 +106,7 @@ export class GameAPI {
     return response.json();
   }
 
-  async testDatabase() {
-    const response = await fetch(`${this.baseUrl}/test-db`, {
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to test database');
-    }
-
-    return response.json();
-  }
+  // Removed testDatabase method since test-db function doesn't exist
 }
 
 export const gameAPI = new GameAPI();
