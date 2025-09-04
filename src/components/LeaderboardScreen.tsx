@@ -35,6 +35,16 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const testDatabase = async () => {
+    try {
+      console.log('Testing database...');
+      const response = await gameAPI.testDatabase();
+      console.log('Database test response:', response);
+    } catch (error) {
+      console.error('Database test failed:', error);
+    }
+  };
+
   const fetchLeaderboard = async () => {
     try {
       console.log('Fetching leaderboard...', { venueId });
@@ -122,6 +132,13 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
           <div className="text-gray-800">
             <h1 className="text-xl md:text-2xl font-bold">{strings.topPlayers}</h1>
             <p className="text-xs md:text-sm text-gray-600">{strings.today}</p>
+            {/* Debug button */}
+            <button
+              onClick={testDatabase}
+              className="mt-2 px-3 py-1 bg-red-500 text-white rounded text-xs"
+            >
+              Test DB
+            </button>
           </div>
         </div>
 
