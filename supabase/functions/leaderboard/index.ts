@@ -11,6 +11,8 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
 
+  console.log('Leaderboard function called at:', new Date().toISOString());
+
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -128,18 +130,28 @@ Deno.serve(async (req: Request) => {
 
     console.log('Debug info:', debugInfo);
 
+    const response = { 
+      leaderboard, 
+      debugInfo,
+      message: "Leaderboard API working - check debugInfo for database details",
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('Returning response:', response);
+    
     return new Response(
-      JSON.stringify({ 
-        leaderboard, 
-        debugInfo,
-        message: "Leaderboard API working - check debugInfo for database details"
-      }),
+      JSON.stringify(response),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
+    console.error('Leaderboard function error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        leaderboard: [],
+        debugInfo: { error: error.message, timestamp: new Date().toISOString() }
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
