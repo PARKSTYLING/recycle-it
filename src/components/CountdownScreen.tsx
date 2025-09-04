@@ -78,67 +78,94 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
         </div>
 
         {/* Center Content */}
-        <div className="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto px-4">
+        <div className="flex-1 flex flex-col justify-center items-center text-center max-w-2xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="space-y-6 md:space-y-8"
+            className="space-y-8 md:space-y-10"
           >
-            <h1 className="text-2xl md:text-3xl font-bold mb-4">
-              {strings.howToPlay}
-            </h1>
-            
-            <div className="space-y-4 text-left">
-              <motion.p 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+            {/* Main Title */}
+            <div className="space-y-2">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
-                className="text-base md:text-lg"
+                className="text-3xl md:text-4xl font-bold uppercase leading-tight"
               >
-                {strings.catchBottles}
-              </motion.p>
-              
-              <motion.p 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                {strings.howToPlayTitle}
+              </motion.h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.6 }}
-                className="text-base md:text-lg"
+                className="text-3xl md:text-4xl font-bold uppercase leading-tight"
               >
-                {strings.avoidTrash}
-              </motion.p>
-              
-              <motion.p 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.9, duration: 0.6 }}
-                className="text-base md:text-lg"
-              >
-                {strings.timeLimit}
-              </motion.p>
-              
-              <motion.p 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.1, duration: 0.6 }}
-                className="text-sm md:text-base text-gray-200"
-              >
-                {strings.afterGame}
-              </motion.p>
+                {strings.howToPlaySubtitle}
+              </motion.h1>
             </div>
             
-            <motion.div
+            {/* Game Instructions */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="space-y-2"
+            >
+              <p className="text-lg md:text-xl">
+                {strings.gameInstructions}
+              </p>
+              <p className="text-lg md:text-xl">
+                {strings.gameInstructions2}
+              </p>
+            </motion.div>
+            
+            {/* Scoring Rules */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.6 }}
+              className="space-y-2"
+            >
+              <p className="text-lg md:text-xl">
+                <span className="font-bold">{strings.scoringRules}</span>
+              </p>
+              <p className="text-lg md:text-xl">
+                <span className="font-bold">{strings.trash}</span>
+              </p>
+            </motion.div>
+            
+            {/* Post-Game Information */}
+            <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.3, duration: 0.6 }}
+              className="space-y-2"
+            >
+              <p className="text-lg md:text-xl">
+                {strings.postGameInfo}
+              </p>
+              <p className="text-lg md:text-xl">
+                {strings.postGameInfo2}
+              </p>
+              <p className="text-lg md:text-xl">
+                {strings.postGameInfo3}
+              </p>
+              <p className="text-lg md:text-xl">
+                {strings.postGameInfo4}
+              </p>
+            </motion.div>
+            
+            {/* Ready Question */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.5, duration: 0.6 }}
               className="text-center mt-8"
             >
-              <h2 className="text-xl md:text-2xl font-bold mb-2">
-                {strings.readyToStart}
+              <h2 className="text-2xl md:text-3xl font-bold">
+                {strings.readyQuestion}
               </h2>
-              <p className="text-base md:text-lg">
-                {strings.tapStart}
-              </p>
             </motion.div>
           </motion.div>
         </div>

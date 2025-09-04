@@ -35,13 +35,17 @@ interface LocalizedStrings {
   marketingRequired: string;
   
   // Countdown/Instructions
-  howToPlay: string;
-  catchBottles: string;
-  avoidTrash: string;
-  timeLimit: string;
-  afterGame: string;
-  readyToStart: string;
-  tapStart: string;
+  howToPlayTitle: string;
+  howToPlaySubtitle: string;
+  gameInstructions: string;
+  scoringRules: string;
+  parkPackaging: string;
+  trash: string;
+  postGameInfo: string;
+  postGameInfo2: string;
+  postGameInfo3: string;
+  postGameInfo4: string;
+  readyQuestion: string;
   
   // Results
   congratulations: string;
@@ -136,13 +140,17 @@ Ansvar og begrænsninger
   marketingRequired: "Du skal acceptere markedsføring for at deltage",
   
   // Countdown/Instructions
-  howToPlay: "Sådan spiller du:",
-  catchBottles: "🍾 Fang flasker for at score point",
-  avoidTrash: "🗑️ Undgå skrald - det koster point",
-  timeLimit: "⏰ Du har 60 sekunder",
-  afterGame: "Efter spillet kan du vinde præmier baseret på din score!",
-  readyToStart: "Klar til at starte?",
-  tapStart: "Tryk for at begynde",
+  howToPlayTitle: "SÅDAN SPILLER DU OG",
+  howToPlaySubtitle: "DELTAGER I KONKURRENCEN",
+  gameInstructions: "Du har 40 sekunder - saml så meget",
+  gameInstructions2: "pant som muligt!",
+  scoringRules: "PARK emballage = +20 kr.",
+  trash: "Skrald = -10 kr.",
+  postGameInfo: "Når tiden er gået, ser du din score og",
+  postGameInfo2: "deltager automatisk i konkurrencen -",
+  postGameInfo3: "måske er der også en ekstra gave der",
+  postGameInfo4: "venter på dig?",
+  readyQuestion: "Er du klar?",
   
   // Results
   congratulations: "Tillykke!",
@@ -237,13 +245,17 @@ Responsibility and limitations
   marketingRequired: "You must accept marketing to participate",
   
   // Countdown/Instructions
-  howToPlay: "How to play:",
-  catchBottles: "🍾 Catch bottles to score points",
-  avoidTrash: "🗑️ Avoid trash - it costs points",
-  timeLimit: "⏰ You have 60 seconds",
-  afterGame: "After the game, you can win prizes based on your score!",
-  readyToStart: "Ready to start?",
-  tapStart: "Tap to begin",
+  howToPlayTitle: "HOW TO PLAY AND",
+  howToPlaySubtitle: "PARTICIPATE IN THE COMPETITION",
+  gameInstructions: "You have 40 seconds - collect as much",
+  gameInstructions2: "deposit as possible!",
+  scoringRules: "PARK packaging = +20 kr.",
+  trash: "Trash = -10 kr.",
+  postGameInfo: "When time is up, you see your score and",
+  postGameInfo2: "automatically participate in the competition -",
+  postGameInfo3: "maybe there's also an extra gift that",
+  postGameInfo4: "awaits you?",
+  readyQuestion: "Are you ready?",
   
   // Results
   congratulations: "Congratulations!",
