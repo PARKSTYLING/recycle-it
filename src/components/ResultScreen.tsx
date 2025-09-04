@@ -69,188 +69,128 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   }, []);
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
-      {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source 
-          src={`/videos/UI/${isMobile ? 'background_movie_mobile.mp4' : 'background_movie_desktop.mp4'}`} 
-          type="video/mp4" 
-        />
-        {/* Fallback image if video fails to load */}
-        <img 
-          src="/images/UI/Kvinde_med_bier.jpg" 
-          alt="Background" 
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </video>
+    <div className="h-screen w-screen flex flex-col relative overflow-hidden">
+      {/* Background Image - Forest */}
+      <div 
+        className="absolute inset-0 w-full h-full z-0"
+        style={{
+          backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
       
-      {/* Enhanced dark overlay with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/40 to-black/60 z-10"></div>
-      
-      {/* Main content container */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-lg mx-auto max-h-full overflow-y-auto relative z-20 border border-white/20"
-      >
-        {/* Header with celebration */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-center mb-6 md:mb-8"
-        >
-          <div className="flex justify-center mb-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.5, type: "spring", stiffness: 200 }}
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-3 shadow-lg"
-            >
-              <Star className="w-8 h-8 text-white" />
-            </motion.div>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-            {strings.wellPlayed}
-          </h1>
-          <p className="text-gray-600 mt-2 text-sm md:text-base">Fantastisk præstation!</p>
-        </motion.div>
-
-        {/* Score Display with enhanced styling */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="mb-8 text-center"
-        >
-          <h2 className="text-lg md:text-xl font-semibold text-gray-700 mb-4">{strings.youCollected}</h2>
-          <div className="relative">
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.8, type: "spring", stiffness: 150 }}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 md:p-8 shadow-xl border-4 border-white/50"
-            >
-              <div className="text-5xl md:text-7xl font-bold text-white mb-2 drop-shadow-lg">
-                {finalScore}
-              </div>
-              <div className="text-xl md:text-2xl text-white/90 font-semibold">DKK</div>
-            </motion.div>
-            {/* Decorative elements */}
-            <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
-            <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-          </div>
-        </motion.div>
-
-        {/* Prize Information with enhanced design */}
-        {isFirstPlay && (
+      {/* Content Container */}
+      <div className="flex flex-col h-full relative z-10 px-4 py-6">
+        {/* PARK Logo at top */}
+        <div className="flex justify-center mb-6">
+          <img 
+            src="/images/UI/PARK_logo_white.png"
+            alt="PARK Logo"
+            className="h-12 w-auto object-contain"
+          />
+        </div>
+        
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col justify-center space-y-4">
+          {/* Main Results Card */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-5 md:p-6 mb-6 relative overflow-hidden"
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-3xl shadow-2xl p-6 mx-auto w-full max-w-sm"
           >
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-20 h-20 bg-green-200/30 rounded-full -translate-y-10 translate-x-10"></div>
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-emerald-200/30 rounded-full translate-y-8 -translate-x-8"></div>
+            {/* Header */}
+            <h1 className="text-2xl font-bold text-center mb-4" style={{ color: '#48723a' }}>
+              {strings.wellPlayed}
+            </h1>
             
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-4">
-                <Gift className="w-6 h-6 text-green-600" />
-                <h3 className="text-lg font-bold text-green-800">Tillykke! Du har vundet præmier!</h3>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <Award className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm md:text-base text-green-800 font-medium">
-                    {strings.raffleText}
-                  </p>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <Star className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm md:text-base text-green-700">
-                    {strings.discountText}
-                  </p>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <Trophy className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm md:text-base text-green-700">
-                    {strings.compareText}
-                  </p>
-                </div>
-                
-                <div className="bg-white/60 rounded-lg p-3 mt-4">
-                  <p className="text-xs md:text-sm text-green-600 font-medium text-center">
-                    {strings.dailyWinnerText}
-                  </p>
-                </div>
+            {/* Score Section */}
+            <div className="text-center mb-4">
+              <p className="text-sm mb-2" style={{ color: '#48723a' }}>
+                {strings.youCollected}
+              </p>
+              <div className="text-4xl font-bold mb-2" style={{ color: '#48723a' }}>
+                {finalScore} DKK
               </div>
             </div>
+            
+            {/* Prize Information */}
+            <div className="text-center">
+              <p className="text-sm leading-relaxed" style={{ color: '#48723a' }}>
+                {strings.raffleText}
+              </p>
+            </div>
           </motion.div>
-        )}
-
-        {/* Action Buttons with enhanced styling */}
+          
+          {/* Secondary Card - Call to Action */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="bg-white rounded-3xl shadow-2xl p-6 mx-auto w-full max-w-sm"
+          >
+            {/* Question */}
+            <h2 className="text-lg font-bold text-center mb-3" style={{ color: '#48723a' }}>
+              {strings.wantToSee}
+            </h2>
+            
+            {/* Daily Winner Info */}
+            <p className="text-sm text-center mb-6" style={{ color: '#48723a' }}>
+              {strings.dailyWinner}
+            </p>
+            
+            {/* Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={onShowLeaderboard}
+                className="w-full py-3 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 active:scale-95"
+                style={{ backgroundColor: '#c6db91' }}
+              >
+                {strings.scoreboard}
+              </button>
+              
+              <button
+                onClick={onPlayAgain}
+                className="w-full py-3 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 active:scale-95"
+                style={{ backgroundColor: '#77a224' }}
+              >
+                {strings.playAgain}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+        
+        {/* Bottom Discount Banner */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          className="space-y-4"
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="bg-black/70 backdrop-blur-sm rounded-t-3xl p-4 mt-4"
         >
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onPlayAgain}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-white/20"
-          >
-            <RotateCcw size={24} className="md:w-7 md:h-7" />
-            {strings.playAgain}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onShowLeaderboard}
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 md:py-4 rounded-2xl font-semibold text-base md:text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-white/20"
-          >
-            <Trophy size={20} className="md:w-6 md:h-6" />
-            {strings.leaderboard}
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onBackToStart}
-            className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 md:py-4 rounded-2xl font-medium text-sm md:text-base flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-white/20"
-          >
-            <Mail size={18} className="md:w-5 md:h-5" />
-            {strings.backToStart}
-          </motion.button>
+          <h3 className="text-xl font-bold text-white text-center mb-2">
+            {strings.discountBanner}
+          </h3>
+          <p className="text-sm text-white text-center leading-relaxed">
+            {strings.discountDetails}
+          </p>
         </motion.div>
-
+        
         {/* Debug indicator */}
         {userEmail === 'debug@test.com' && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg"
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="mt-2 p-2 bg-red-100 border border-red-300 rounded-lg mx-4"
           >
             <p className="text-xs text-red-600 font-medium text-center">
               🐛 DEBUG MODE - This is test data
             </p>
           </motion.div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 };

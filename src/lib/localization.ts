@@ -48,6 +48,16 @@ interface LocalizedStrings {
   yourScore: string;
   playAgain: string;
   viewLeaderboard: string;
+  wellPlayed: string;
+  youCollected: string;
+  raffleText: string;
+  discountText: string;
+  compareText: string;
+  dailyWinnerText: string;
+  wantToSee: string;
+  dailyWinner: string;
+  discountBanner: string;
+  discountDetails: string;
   
   // Leaderboard
   leaderboard: string;
@@ -139,6 +149,16 @@ Ansvar og begrænsninger
   yourScore: "Din Score:",
   playAgain: "Spil Igen",
   viewLeaderboard: "Se Leaderboard",
+  wellPlayed: "GODT SPILLET",
+  youCollected: "Du samlede i alt pant for",
+  raffleText: "Du er nu med i lodtrækningen om en PARK Pro Airstyler + PARK produkter for 5.000 kr.",
+  discountText: "Alle deltagere får en rabatkode på 15% til webshoppen",
+  compareText: "Sammenlign din score med andre deltagere",
+  dailyWinnerText: "Dagens nr. 1 vinder et gavekort på 500 kr",
+  wantToSee: "Vil du se, hvordan du klarer dig mod de andre?",
+  dailyWinner: "Dagens nr. 1 vinder et gavekort på 500 kr",
+  discountBanner: "15% TIL DIG",
+  discountDetails: "Tak for indsatsen – du har fået en rabatkode på 15% til hele webshoppen. Tjek din mail",
   
   // Leaderboard
   leaderboard: "Leaderboard",
@@ -230,6 +250,16 @@ Responsibility and limitations
   yourScore: "Your Score:",
   playAgain: "Play Again",
   viewLeaderboard: "View Leaderboard",
+  wellPlayed: "WELL PLAYED",
+  youCollected: "You collected a total of deposit for",
+  raffleText: "You are now in the draw for a PARK Pro Airstyler + PARK products for 5,000 kr.",
+  discountText: "All participants receive a 15% discount code for the webshop",
+  compareText: "Compare your score with other participants",
+  dailyWinnerText: "Today's #1 winner gets a gift card for 500 kr",
+  wantToSee: "Do you want to see how you compare to others?",
+  dailyWinner: "Today's #1 winner gets a gift card for 500 kr",
+  discountBanner: "15% FOR YOU",
+  discountDetails: "Thanks for your effort – you have received a discount code of 15% for the entire webshop. Check your email",
   
   // Leaderboard
   leaderboard: "Leaderboard",
