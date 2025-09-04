@@ -121,13 +121,19 @@ Deno.serve(async (req: Request) => {
       dateRange: {
         startOfDayUTC: startOfDayUTC.toISOString(),
         endOfDayUTC: endOfDayUTC.toISOString()
-      }
+      },
+      timestamp: new Date().toISOString(),
+      message: "Debug info from leaderboard Edge Function"
     };
 
     console.log('Debug info:', debugInfo);
 
     return new Response(
-      JSON.stringify({ leaderboard, debugInfo }),
+      JSON.stringify({ 
+        leaderboard, 
+        debugInfo,
+        message: "Leaderboard API working - check debugInfo for database details"
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
