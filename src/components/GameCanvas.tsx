@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gameAssets } from '../lib/gameAssets';
 import { GAME_CONFIG, getGameConstants } from '../lib/gameConfig';
 import { animationManager, EASING } from '../lib/animationUtils';
-import { gameItemPool, scoreAnimationPool, GameItem, ScoreAnimation } from '../lib/objectPool';
+import { gameItemPool, scoreAnimationPool } from '../lib/objectPool';
 
 interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -23,7 +23,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   
   // Canvas ref callback to ensure canvas is properly set up
   const setCanvasRef = useCallback((canvas: HTMLCanvasElement | null) => {
-    canvasRef.current = canvas;
     if (canvas) {
       console.log('Canvas element set, setting up...');
       setCanvasReady(true);
@@ -36,7 +35,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   // Game state
   const [containerX, setContainerX] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(40);
+  const [, setTimeLeft] = useState(40);
   const [gameActive, setGameActive] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
@@ -260,7 +259,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     if (!gameActive) return;
     
     const now = performance.now();
-    const deltaTime = now - lastFrameTime.current;
     lastFrameTime.current = now;
     
     const { GAME_DURATION, SPAWN_INTERVAL, CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
