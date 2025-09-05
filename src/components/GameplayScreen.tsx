@@ -50,7 +50,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         </div>
       </div>
 
-      {/* Game Canvas Container - Ensure proper z-index and positioning */}
+      {/* Game Canvas Container - Ensure proper z-index and positioning with more space for container */}
       <div className="absolute inset-0" style={{ 
         height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 4rem)', 
         width: 'calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right))',
@@ -58,7 +58,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         top: 'calc(env(safe-area-inset-top) + 4rem)',
         left: 'env(safe-area-inset-left)',
         right: 'env(safe-area-inset-right)',
-        bottom: 'env(safe-area-inset-bottom)',
+        bottom: 'calc(env(safe-area-inset-bottom) + 60px)', // Add extra 60px bottom padding for container
         zIndex: 5 // Ensure canvas is above background but below HUD
       }}>
         <GameCanvas

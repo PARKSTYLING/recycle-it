@@ -430,15 +430,23 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const { CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
     const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
     
-    // Debug logging for mobile container positioning
+    // Enhanced debug logging for mobile container positioning
     if (window.innerWidth < 768 && gameActive) {
+      const containerBottom = containerY + CONTAINER_HEIGHT;
+      const visibleHeight = Math.min(containerBottom, canvas.height) - Math.max(containerY, 0);
+      const visibilityPercentage = (visibleHeight / CONTAINER_HEIGHT) * 100;
+      
       console.log('Mobile Container Debug:', {
         canvasHeight: canvas.height,
         containerHeight: CONTAINER_HEIGHT,
         bottomOffset: CONTAINER_BOTTOM_OFFSET,
         containerY: containerY,
+        containerBottom: containerBottom,
         containerX: containerX,
-        isVisible: containerY > 0 && containerY < canvas.height
+        visibleHeight: visibleHeight,
+        visibilityPercentage: Math.round(visibilityPercentage) + '%',
+        isFullyVisible: containerY >= 0 && containerBottom <= canvas.height,
+        safeAreaBottom: window.innerHeight - window.screen.height
       });
     }
     
