@@ -22,6 +22,9 @@ const App: React.FC = () => {
   const [playSessionId, setPlaySessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [gameStats, setGameStats] = useState<any>(null);
+  
+  // Navigation state to track where leaderboard was accessed from
+  const [previousScreen, setPreviousScreen] = useState<Screen | null>(null);
 
   const resetTimer = useIdleTimer(() => {
     setCurrentScreen('attract');
@@ -118,6 +121,19 @@ const App: React.FC = () => {
     setCurrentScreen('result');
   };
 
+  const handleShowLeaderboard = () => {
+    // Store current screen as previous screen before going to leaderboard
+    setPreviousScreen(currentScreen);
+    setCurrentScreen('leaderboard');
+  };
+
+  const handleBackFromLeaderboard = () => {
+    // Return to the previous screen, or default to start if no previous screen
+    const targetScreen = previousScreen || 'start';
+    setPreviousScreen(null); // Clear the previous screen
+    setCurrentScreen(targetScreen);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'attract':
@@ -139,7 +155,7 @@ const App: React.FC = () => {
         return (
           <StartScreen
             onStartGame={handleStartGame}
-            onShowLeaderboard={() => setCurrentScreen('leaderboard')}
+            onShowLeaderboard={handleShowLeaderboard}
           />
         );
       
@@ -167,14 +183,14 @@ const App: React.FC = () => {
             finalScore={finalScore}
             userEmail={userEmail}
             onPlayAgain={handleStartGame}
-            onShowLeaderboard={() => setCurrentScreen('leaderboard')}
+            onShowLeaderboard={handleShowLeaderboard}
           />
         );
       
       case 'leaderboard':
         return (
           <LeaderboardScreen
-            onBack={() => setCurrentScreen('start')}
+            onBack={handleBackFromLeaderboard}
           />
         );
       
