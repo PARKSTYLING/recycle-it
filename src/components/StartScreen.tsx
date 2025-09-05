@@ -164,9 +164,9 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         scrollBehavior: 'smooth',
         overscrollBehavior: 'contain'
       }}>
-        <div className="flex items-center justify-center min-h-full p-4">
+        <div className="flex items-start justify-center p-4 py-8">
           {/* Main content card */}
-          <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm">
+          <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm mb-8">
         {/* Main offer */}
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold text-green-800 leading-tight">
