@@ -107,7 +107,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         loop
         muted
         playsInline
-        poster="/images/UI/Kvinde_med_bier.jpg"
+        poster="/images/UI/secoundary_background_mobile.jpg"
         style={{ 
           objectPosition: 'center top',
           width: '100%',
@@ -127,7 +127,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         <div 
           className="absolute inset-0 w-full h-full"
           style={{
-            backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
+            backgroundImage: 'url(/images/UI/secoundary_background_mobile.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             backgroundRepeat: 'no-repeat'
