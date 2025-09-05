@@ -79,7 +79,6 @@ export class GameAssetsManager {
         asset.loaded = true;
         asset.image = img;
         this.loadingPromises.delete(name);
-        console.log(`✅ Loaded asset: ${name}`);
         resolve(img);
       };
       
@@ -98,10 +97,8 @@ export class GameAssetsManager {
   }
 
   async loadAllAssets(): Promise<void> {
-    console.log('🎨 Loading all game assets...');
     const loadPromises = Array.from(this.assets.keys()).map(name => this.loadAsset(name));
     await Promise.allSettled(loadPromises);
-    console.log('🎨 Asset loading complete');
   }
 
   getAsset(name: string): HTMLImageElement | null {

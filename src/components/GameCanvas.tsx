@@ -17,17 +17,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   onGameEnd,
   isPlaying
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasReady, setCanvasReady] = useState(false);
   const gameLoopRef = useRef<number>();
   
-  // Canvas ref callback to ensure canvas is properly set up
-  const setCanvasRef = useCallback((canvas: HTMLCanvasElement | null) => {
-    if (canvas) {
-      console.log('Canvas element set, setting up...');
-      setCanvasReady(true);
-    }
-  }, []);
   const gameStartTime = useRef<number>(0);
   const lastSpawnTime = useRef<number>(0);
   const lastFrameTime = useRef<number>(0);
@@ -77,27 +69,22 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   // Initialize canvas size - CRITICAL: This must run when canvas is ready
   useEffect(() => {
     if (!canvasReady) {
-      console.log('Canvas not ready yet');
       return;
     }
     
-    console.log('Canvas ready, setting up dimensions...');
-    
-    const canvas = canvasRef.current;
+    // Get canvas from DOM since we can't use canvasRef.current
+    const canvas = document.querySelector('canvas');
     if (!canvas) {
-      console.log('Canvas ref still not available');
       return;
     }
     
     const resizeCanvas = () => {
       const parent = canvas.parentElement;
       if (!parent) {
-        console.log('Parent element not available');
         return;
       }
       
       const rect = parent.getBoundingClientRect();
-      console.log('Canvas dimensions:', rect.width, 'x', rect.height);
       
       if (rect.width > 0 && rect.height > 0) {
         canvas.width = rect.width;
@@ -106,10 +93,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         
         // Center container initially
         const { CONTAINER_WIDTH } = getGameConstants();
-        console.log('Container width:', CONTAINER_WIDTH);
-        setContainerX(Math.max(0, rect.width / 2 - CONTAINER_WIDTH / 2));
+        const newContainerX = Math.max(0, rect.width / 2 - CONTAINER_WIDTH / 2);
+        setContainerX(newContainerX);
       } else {
-        console.log('Invalid canvas dimensions, retrying...');
         setTimeout(resizeCanvas, 50);
       }
     };
@@ -176,7 +162,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Spawn new item with animation
   const spawnItem = useCallback(() => {
-    const canvas = canvasRef.current;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
     
     const { ITEM_SIZE, FALL_SPEED } = getGameConstants();
@@ -252,7 +238,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Main game loop with optimizations
   const gameLoop = useCallback(() => {
-    if (!gameActive) return;
+    if (!gameActive) {
+      return;
+    }
     
     const now = performance.now();
     lastFrameTime.current = now;
@@ -290,7 +278,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     
     // Update items using object pool
     const activeItems = gameItemPool.getActiveObjects();
-    const canvas = canvasRef.current;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
     
     for (let i = activeItems.length - 1; i >= 0; i--) {
@@ -391,7 +379,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Container movement handlers
   const getMousePosition = useCallback((e: React.MouseEvent) => {
-    const canvas = canvasRef.current;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return 0;
     
     const rect = canvas.getBoundingClientRect();
@@ -399,7 +387,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   }, []);
 
   const getTouchPosition = useCallback((e: React.TouchEvent) => {
-    const canvas = canvasRef.current;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas || e.touches.length === 0) return 0;
     
     const rect = canvas.getBoundingClientRect();
@@ -407,7 +395,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   }, []);
 
   const moveContainer = useCallback((x: number) => {
-    const canvas = canvasRef.current;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
     if (!canvas) return;
     
     const { CONTAINER_WIDTH } = getGameConstants();
@@ -429,11 +417,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Render game
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+    if (!canvas) {
+      return;
+    }
     
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
     
     const { CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
     const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
@@ -593,11 +585,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     
     ctx.restore(); // Restore screen shake transform
     
-  }, [containerX, containerScale, containerRotation, screenShake, flashEffect, canvasSize, backgroundImage]);
+  }, [containerX, containerScale, containerRotation, screenShake, flashEffect, canvasSize, backgroundImage, gameActive, isPlaying]);
 
   return (
     <canvas
-      ref={setCanvasRef}
+      ref={(canvas) => {
+        if (canvas) {
+          setCanvasReady(true);
+        }
+      }}
       className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}

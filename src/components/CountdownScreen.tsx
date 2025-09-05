@@ -222,7 +222,6 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
                   dragConstraints={{ left: 0, right: 200 }}
                   dragElastic={0.1}
                   onDragEnd={handleDragEnd}
-                  onTouchStart={(e) => e.preventDefault()}
                   whileDrag={{ scale: 1.1 }}
                   whileTap={{ scale: 1.1 }}
                   animate={isComplete ? { x: 200, scale: 0.8, opacity: 0 } : {
