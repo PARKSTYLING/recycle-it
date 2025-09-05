@@ -235,13 +235,29 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             : 'none'
         }}
       >
-        <div className="flex items-start justify-center p-4 py-8" style={{
-          paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))'
-        }}>
+        <div 
+          className="flex items-start justify-center p-4" 
+          style={{
+            paddingTop: isMobile && isKeyboardOpen ? '1rem' : '2rem',
+            paddingBottom: isMobile && isKeyboardOpen 
+              ? 'calc(2rem + env(safe-area-inset-bottom))' 
+              : 'calc(6rem + env(safe-area-inset-bottom))'
+          }}
+        >
           {/* Main content card */}
-          <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm mb-8">
+          <div 
+            className="bg-gray-100 rounded-3xl shadow-2xl w-full max-w-sm mb-8"
+            style={{
+              padding: isMobile && isKeyboardOpen ? '1rem' : '1.5rem'
+            }}
+          >
         {/* Main offer */}
-        <div className="text-center mb-4">
+        <div 
+          className="text-center"
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '0.75rem' : '1rem'
+          }}
+        >
           <h1 className="text-2xl font-bold text-green-800 leading-tight">
             {strings.mainOffer}
           </h1>
@@ -251,19 +267,34 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* Instructions */}
-        <p className="text-sm text-gray-800 text-center mb-4">
+        <p 
+          className="text-sm text-gray-800 text-center"
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '0.75rem' : '1rem'
+          }}
+        >
           {strings.instructions}
         </p>
 
         {/* Discount note */}
-        <div className="text-center mb-6">
+        <div 
+          className="text-center"
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '1rem' : '1.5rem'
+          }}
+        >
           <p className="text-xs text-gray-800">
             {strings.discountNote.split('15%')[0]}<span className="font-bold">15% {currentLocale === 'da' ? 'rabatkode' : 'discount code'}</span>{strings.discountNote.split('15%')[1]}
           </p>
         </div>
 
         {/* Language selection flags */}
-        <div className="flex justify-center gap-3 mb-6">
+        <div 
+          className="flex justify-center gap-3"
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '1rem' : '1.5rem'
+          }}
+        >
           <button
             onClick={() => handleLocaleChange('da')}
             className={`p-1 rounded ${currentLocale === 'da' ? 'ring-2' : ''}`}
@@ -293,7 +324,12 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* Form fields */}
-        <div className="space-y-4 mb-6">
+        <div 
+          className={isMobile && isKeyboardOpen ? 'space-y-2' : 'space-y-4'}
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '1rem' : '1.5rem'
+          }}
+        >
           {/* Name input */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -307,12 +343,14 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 clearError('name');
               }}
               onFocus={handleInputFocus}
-              className={`w-full px-4 py-3 md:py-2 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
+              className={`w-full px-4 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               style={{ 
                 '--tw-ring-color': errors.name ? '#ef4444' : '#77a224',
-                fontSize: isMobile ? '16px' : '14px' // Prevents zoom on iOS
+                fontSize: isMobile ? '16px' : '14px', // Prevents zoom on iOS
+                paddingTop: isMobile && isKeyboardOpen ? '0.5rem' : '0.75rem',
+                paddingBottom: isMobile && isKeyboardOpen ? '0.5rem' : '0.75rem'
               } as React.CSSProperties}
               placeholder={strings.enterName}
             />
@@ -334,12 +372,14 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 clearError('email');
               }}
               onFocus={handleInputFocus}
-              className={`w-full px-4 py-3 md:py-2 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
+              className={`w-full px-4 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               style={{ 
                 '--tw-ring-color': errors.email ? '#ef4444' : '#77a224',
-                fontSize: isMobile ? '16px' : '14px' // Prevents zoom on iOS
+                fontSize: isMobile ? '16px' : '14px', // Prevents zoom on iOS
+                paddingTop: isMobile && isKeyboardOpen ? '0.5rem' : '0.75rem',
+                paddingBottom: isMobile && isKeyboardOpen ? '0.5rem' : '0.75rem'
               } as React.CSSProperties}
               placeholder={strings.enterEmail}
             />
@@ -372,7 +412,11 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* Consent checkbox */}
-        <div className="mb-6">
+        <div 
+          style={{
+            marginBottom: isMobile && isKeyboardOpen ? '1rem' : '1.5rem'
+          }}
+        >
           <div className="flex items-start gap-2">
             <input
               type="checkbox"
