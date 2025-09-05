@@ -51,11 +51,11 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
       </div>
 
       {/* Game Canvas Container */}
-      <div className="absolute inset-0 pt-16 md:pt-20" style={{ 
-        height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))', 
+      <div className="absolute inset-0" style={{ 
+        height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 4rem)', 
         width: 'calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right))',
         overflow: 'hidden',
-        top: 'env(safe-area-inset-top)',
+        top: 'calc(env(safe-area-inset-top) + 4rem)',
         left: 'env(safe-area-inset-left)',
         right: 'env(safe-area-inset-right)',
         bottom: 'env(safe-area-inset-bottom)'
