@@ -436,6 +436,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       const visibleHeight = Math.min(containerBottom, canvas.height) - Math.max(containerY, 0);
       const visibilityPercentage = (visibleHeight / CONTAINER_HEIGHT) * 100;
       
+      const groundY = containerY + CONTAINER_HEIGHT;
+      const groundBottom = groundY + 50;
+      
       console.log('Mobile Container Debug:', {
         canvasHeight: canvas.height,
         containerHeight: CONTAINER_HEIGHT,
@@ -446,6 +449,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         visibleHeight: visibleHeight,
         visibilityPercentage: Math.round(visibilityPercentage) + '%',
         isFullyVisible: containerY >= 0 && containerBottom <= canvas.height,
+        groundY: groundY,
+        groundBottom: groundBottom,
+        groundVisible: groundY >= 0 && groundBottom <= canvas.height,
         safeAreaBottom: window.innerHeight - window.screen.height
       });
     }
@@ -530,9 +536,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       ctx.restore();
     });
     
-    // Draw ground - much thicker and more visible (drawn last so it appears on top)
+    // Draw ground - positioned below the container for proper mobile visibility
+    const groundY = containerY + CONTAINER_HEIGHT;
+    const groundHeight = 50;
     ctx.fillStyle = '#2D3748';
-    ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+    ctx.fillRect(0, groundY, canvas.width, groundHeight);
     
     // Draw score animations with enhanced effects
     const activeScoreAnimations = scoreAnimationPool.getActiveObjects();
