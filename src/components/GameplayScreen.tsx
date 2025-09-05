@@ -28,10 +28,18 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
       backgroundSize: 'cover',
       backgroundPosition: 'center top',
       backgroundRepeat: 'no-repeat',
-      backgroundColor: '#2D3748'
+      backgroundColor: '#2D3748',
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)'
     }}>
       {/* HUD */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-black bg-opacity-80 text-white p-3 md:p-4">
+      <div className="absolute top-0 left-0 right-0 z-10 bg-black bg-opacity-80 text-white p-3 md:p-4" style={{
+        paddingTop: 'calc(0.75rem + env(safe-area-inset-top))',
+        paddingLeft: 'calc(0.75rem + env(safe-area-inset-left))',
+        paddingRight: 'calc(0.75rem + env(safe-area-inset-right))'
+      }}>
         <div className="flex justify-between items-center max-w-4xl mx-auto">
           <div className="text-lg md:text-xl font-bold">
             {strings.score}: {score} DKK
@@ -44,9 +52,13 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
 
       {/* Game Canvas Container */}
       <div className="absolute inset-0 pt-16 md:pt-20" style={{ 
-        height: '100vh', 
-        width: '100vw',
-        overflow: 'hidden'
+        height: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))', 
+        width: 'calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right))',
+        overflow: 'hidden',
+        top: 'env(safe-area-inset-top)',
+        left: 'env(safe-area-inset-left)',
+        right: 'env(safe-area-inset-right)',
+        bottom: 'env(safe-area-inset-bottom)'
       }}>
         <GameCanvas
           onScoreChange={onScoreChange}

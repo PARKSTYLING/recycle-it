@@ -143,7 +143,7 @@ Ansvar og begrænsninger
   // Countdown/Instructions
   howToPlayTitle: "SÅDAN SPILLER DU OG",
   howToPlaySubtitle: "DELTAGER I KONKURRENCEN",
-  gameInstructions: "Du har 40 sekunder - saml så meget",
+  gameInstructions: "Du har 30 sekunder - saml så meget",
   gameInstructions2: "pant som muligt!",
   scoringRules: "PARK emballage = +20 kr.",
   trash: "Skrald = -10 kr.",
@@ -249,7 +249,7 @@ Responsibility and limitations
   // Countdown/Instructions
   howToPlayTitle: "HOW TO PLAY AND",
   howToPlaySubtitle: "PARTICIPATE IN THE COMPETITION",
-  gameInstructions: "You have 40 seconds - collect as much",
+  gameInstructions: "You have 30 seconds - collect as much",
   gameInstructions2: "deposit as possible!",
   scoringRules: "PARK packaging = +20 kr.",
   trash: "Trash = -10 kr.",

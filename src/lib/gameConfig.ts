@@ -3,7 +3,7 @@
 
 export const GAME_CONFIG = {
   // Game Mechanics
-  GAME_DURATION: 40000, // 40 seconds
+  GAME_DURATION: 30000, // 30 seconds
   SCORE_PER_CORRECT: 20,
   PENALTY_PER_WRONG: 10,
   SCORE_FLOOR: 0,
