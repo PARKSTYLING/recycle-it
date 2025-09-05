@@ -162,11 +162,10 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       <div className="flex-1 relative z-20 overflow-y-auto" style={{ 
         WebkitOverflowScrolling: 'touch',
         scrollBehavior: 'smooth',
-        overscrollBehavior: 'contain',
-        paddingBottom: 'env(safe-area-inset-bottom)'
+        overscrollBehavior: 'contain'
       }}>
         <div className="flex items-start justify-center p-4 py-8" style={{
-          paddingBottom: 'calc(2rem + env(safe-area-inset-bottom))'
+          paddingBottom: 'calc(4rem + env(safe-area-inset-bottom))'
         }}>
           {/* Main content card */}
           <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm mb-8">
