@@ -153,7 +153,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
             </div>
           ) : (
             <div className="divide-y divide-gray-100 overflow-y-auto h-full max-h-[460px]">
-            <div className="divide-y divide-gray-100 overflow-y-auto h-full max-h-[506px]">
               {leaderboard.map((entry) => (
                 <div
                   key={`${entry.rank}-${entry.timestamp}`}
@@ -186,7 +185,6 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
                   </div>
                 </div>
               ))}
-            </div>
             </div>
           )}
         </div>

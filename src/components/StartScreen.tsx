@@ -324,20 +324,20 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         {/* Action buttons */}
         <div className="space-y-3">
           {/* Primary button */}
-          <button
+          <motion.button
             onClick={handleStartGame}
             disabled={isLoading}
-            className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-all transform ${
+            className={`w-full text-white py-4 rounded-xl font-bold text-lg transition-all ${
               isLoading 
                 ? 'opacity-75 cursor-not-allowed' 
-                : 'hover:scale-105 active:scale-95'
+                : ''
             }`}
             style={{ 
               backgroundColor: isLoading ? '#6a8f1f' : '#77a224',
-              ':hover': { backgroundColor: '#6a8f1f' }
             }}
-            onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#6a8f1f')}
-            onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#77a224')}
+            whileHover={!isLoading ? { scale: 1.05, backgroundColor: '#6a8f1f' } : {}}
+            whileTap={!isLoading ? { scale: 0.95 } : {}}
+            transition={{ duration: 0.15, ease: "easeOut" }}
           >
             {isLoading ? (
               <div className="flex items-center justify-center space-x-2">
@@ -347,37 +347,22 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             ) : (
               strings.readySetRecycle
             )}
-          </button>
+          </motion.button>
 
           {/* Secondary button */}
-          <button
+          <motion.button
             onClick={onShowLeaderboard}
-            className="w-full text-white py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 active:scale-95"
+            className="w-full text-white py-4 rounded-xl font-bold text-lg transition-all"
             style={{ 
               backgroundColor: '#c6db91',
-              ':hover': { backgroundColor: '#b8d17a' }
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#b8d17a'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#c6db91'}
+            whileHover={{ scale: 1.05, backgroundColor: '#b8d17a' }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
           >
             {strings.scoreboard}
-          </button>
+          </motion.button>
 
-          {/* Test button - only show in development */}
-          {process.env.NODE_ENV === 'development' && (
-            <button
-              onClick={() => onStartGame({ userId: 'test-user', email: 'test@example.com' })}
-              className="w-full text-white py-3 rounded-xl font-bold text-base transition-all transform hover:scale-105 active:scale-95"
-              style={{ 
-                backgroundColor: '#6b7280',
-                ':hover': { backgroundColor: '#4b5563' }
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#4b5563'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#6b7280'}
-            >
-              🎮 Test Game (Skip Form)
-            </button>
-          )}
 
         </div>
         </div>

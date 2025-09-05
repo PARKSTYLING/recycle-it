@@ -1,26 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { gameAssets } from '../lib/gameAssets';
-
-interface GameItem {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  type: 'recyclable' | 'noise';
-  speed: number;
-  assetName: string;
-}
-
-interface ScoreAnimation {
-  id: string;
-  x: number;
-  y: number;
-  text: string;
-  color: string;
-  opacity: number;
-  startTime: number;
-}
+import { GAME_CONFIG, getGameConstants } from '../lib/gameConfig';
+import { animationManager, EASING } from '../lib/animationUtils';
+import { gameItemPool, scoreAnimationPool, GameItem, ScoreAnimation } from '../lib/objectPool';
 
 interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -36,34 +18,35 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   isPlaying
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasReady, setCanvasReady] = useState(false);
   const gameLoopRef = useRef<number>();
+  
+  // Canvas ref callback to ensure canvas is properly set up
+  const setCanvasRef = useCallback((canvas: HTMLCanvasElement | null) => {
+    canvasRef.current = canvas;
+    if (canvas) {
+      console.log('Canvas element set, setting up...');
+      setCanvasReady(true);
+    }
+  }, []);
   const gameStartTime = useRef<number>(0);
   const lastSpawnTime = useRef<number>(0);
+  const lastFrameTime = useRef<number>(0);
   
   // Game state
   const [containerX, setContainerX] = useState(0);
   const [score, setScore] = useState(0);
-  const [items, setItems] = useState<GameItem[]>([]);
-  const [scoreAnimations, setScoreAnimations] = useState<ScoreAnimation[]>([]);
   const [timeLeft, setTimeLeft] = useState(40);
   const [gameActive, setGameActive] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+  const [showLoading, setShowLoading] = useState(true);
   
-  // Game constants - responsive sizes
-  const getGameConstants = () => {
-    const isMobile = window.innerWidth < 768;
-    return {
-      CONTAINER_WIDTH: isMobile ? 120 : 140,
-      CONTAINER_HEIGHT: isMobile ? 80 : 100,
-      ITEM_SIZE: 100,
-      FALL_SPEED: isMobile ? 3.75 : 3,
-      SPAWN_INTERVAL: 600,
-      GAME_DURATION: 40000,
-      CONTAINER_BOTTOM_OFFSET: isMobile ? 20 : 60
-    };
-  };
+  // Animation states
+  const [containerScale, setContainerScale] = useState(1);
+  const [containerRotation, setContainerRotation] = useState(0);
+  const [screenShake, setScreenShake] = useState({ x: 0, y: 0 });
+  const [flashEffect, setFlashEffect] = useState({ show: false, color: '', duration: 0 });
   
   // Game stats
   const statsRef = useRef({
@@ -75,47 +58,87 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   // Load assets on component mount
   useEffect(() => {
     const loadAssets = async () => {
-      await gameAssets.loadAllAssets();
-      
-      // Load background image
-      const isMobile = window.innerWidth < 768;
-      const backgroundImg = new Image();
-      backgroundImg.onload = () => {
-        setBackgroundImage(backgroundImg);
-        console.log('🎨 Background image loaded');
-      };
-      backgroundImg.src = `/images/UI/${isMobile ? 'secoundary_background_mobile.jpg' : 'secoundary_background_desktop.jpg'}`;
-      
-      setAssetsLoaded(true);
-      console.log('🎨 All assets loaded for game');
+      try {
+        await gameAssets.loadAllAssets();
+        
+        // Load background image
+        const isMobile = window.innerWidth < 768;
+        const backgroundImg = new Image();
+        backgroundImg.onload = () => {
+          setBackgroundImage(backgroundImg);
+        };
+        backgroundImg.src = `/images/UI/${isMobile ? 'secoundary_background_mobile.jpg' : 'secoundary_background_desktop.jpg'}`;
+        
+        setShowLoading(false);
+      } catch (error) {
+        console.error('Failed to load assets:', error);
+        setShowLoading(false);
+      }
     };
     
     loadAssets();
   }, []);
 
-  // Initialize canvas size
+  // Initialize canvas size - CRITICAL: This must run when canvas is ready
   useEffect(() => {
+    if (!canvasReady) {
+      console.log('Canvas not ready yet');
+      return;
+    }
+    
+    console.log('Canvas ready, setting up dimensions...');
+    
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.log('Canvas ref still not available');
+      return;
+    }
     
     const resizeCanvas = () => {
       const parent = canvas.parentElement;
-      if (parent) {
-        const rect = parent.getBoundingClientRect();
+      if (!parent) {
+        console.log('Parent element not available');
+        return;
+      }
+      
+      const rect = parent.getBoundingClientRect();
+      console.log('Canvas dimensions:', rect.width, 'x', rect.height);
+      
+      if (rect.width > 0 && rect.height > 0) {
         canvas.width = rect.width;
         canvas.height = rect.height;
         setCanvasSize({ width: rect.width, height: rect.height });
         
         // Center container initially
         const { CONTAINER_WIDTH } = getGameConstants();
+        console.log('Container width:', CONTAINER_WIDTH);
         setContainerX(Math.max(0, rect.width / 2 - CONTAINER_WIDTH / 2));
+      } else {
+        console.log('Invalid canvas dimensions, retrying...');
+        setTimeout(resizeCanvas, 50);
       }
     };
     
+    // Try immediately, then with delays if needed
     resizeCanvas();
+    const timeoutId1 = setTimeout(resizeCanvas, 50);
+    const timeoutId2 = setTimeout(resizeCanvas, 100);
+    const timeoutId3 = setTimeout(resizeCanvas, 200);
+    
     window.addEventListener('resize', resizeCanvas);
     
-    return () => window.removeEventListener('resize', resizeCanvas);
+    return () => {
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
+      clearTimeout(timeoutId3);
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [canvasReady, isPlaying]); // Run when canvas is ready or game starts
+
+  // Initialize animation manager
+  useEffect(() => {
+    animationManager.start();
+    return () => animationManager.stop();
   }, []);
 
   // Start game when isPlaying becomes true
@@ -123,9 +146,19 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     if (isPlaying && !gameActive && !gameStartTime.current) {
       // Reset everything
       setScore(0);
-      setItems([]);
       setTimeLeft(40);
       setGameActive(true);
+      
+      // Reset animation states
+      setContainerScale(1);
+      setContainerRotation(0);
+      setScreenShake({ x: 0, y: 0 });
+      setFlashEffect({ show: false, color: '', duration: 0 });
+      
+      // Clear object pools
+      gameItemPool.clear();
+      scoreAnimationPool.clear();
+      animationManager.clear();
       
       // Reset stats
       statsRef.current = {
@@ -134,61 +167,103 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         wrongCatches: 0
       };
       
+      // Canvas sizing is now handled by the main useEffect with isPlaying dependency
+      
       // Set start time
       gameStartTime.current = performance.now();
       lastSpawnTime.current = performance.now();
+      lastFrameTime.current = performance.now();
       
       onScoreChange(0);
-      onTimeChange(20);
+      onTimeChange(40);
     }
   }, [isPlaying, gameActive, onScoreChange, onTimeChange]);
 
-  // Spawn new item
+  // Spawn new item with animation
   const spawnItem = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     
-    const { ITEM_SIZE } = getGameConstants();
-    const isRecyclable = Math.random() < 0.65;
+    const { ITEM_SIZE, FALL_SPEED } = getGameConstants();
+    const isRecyclable = Math.random() < GAME_CONFIG.RECYCLABLE_CHANCE;
     const assetName = isRecyclable 
       ? gameAssets.getRandomRecyclableAsset()
       : gameAssets.getRandomNoiseAsset();
     
-    const newItem: GameItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      x: Math.random() * (canvas.width - ITEM_SIZE),
-      y: -ITEM_SIZE,
-      width: ITEM_SIZE,
-      height: ITEM_SIZE,
-      type: isRecyclable ? 'recyclable' : 'noise',
-      speed: getGameConstants().FALL_SPEED,
-      assetName
-    };
+    const newItem = gameItemPool.get();
+    newItem.x = Math.random() * (canvas.width - ITEM_SIZE);
+    newItem.y = -ITEM_SIZE;
+    newItem.width = ITEM_SIZE;
+    newItem.height = ITEM_SIZE;
+    newItem.type = isRecyclable ? 'recyclable' : 'noise';
+    newItem.speed = FALL_SPEED;
+    newItem.assetName = assetName;
+    newItem.scale = 0; // Start with scale 0 for spawn animation
+    newItem.alpha = 0; // Start with alpha 0 for fade-in
+    newItem.rotation = 0;
     
-    setItems(prev => [...prev, newItem]);
+    // Animate spawn effect
+    animationManager.createAnimation(
+      `item-spawn-${newItem.id}`,
+      0, 1, GAME_CONFIG.ANIMATIONS.ITEM_SPAWN, EASING.easeOutQuart
+    );
   }, []);
 
-  // Add score animation
+  // Add score animation with enhanced effects
   const addScoreAnimation = useCallback((x: number, y: number, points: number, isPositive: boolean) => {
-    const animation: ScoreAnimation = {
-      id: Math.random().toString(36).substr(2, 9),
-      x,
-      y,
-      text: `${isPositive ? '+' : ''}${points} DKK`,
-      color: isPositive ? '#22C55E' : '#EF4444',
-      opacity: 1,
-      startTime: performance.now()
-    };
+    const animation = scoreAnimationPool.get();
+    animation.x = x;
+    animation.y = y;
+    animation.text = `${isPositive ? '+' : ''}${points} DKK`;
+    animation.color = isPositive ? '#22C55E' : '#EF4444';
+    animation.opacity = 1;
+    animation.startTime = performance.now();
+    animation.scale = 0.5; // Start small for pop effect
+    animation.velocityY = -2;
     
-    setScoreAnimations(prev => [...prev, animation]);
+    // Animate score pop
+    animationManager.createAnimation(
+      `score-pop-${animation.id}`,
+      0.5, 1, GAME_CONFIG.ANIMATIONS.SCORE_POP, EASING.easeOutBack
+    );
   }, []);
 
-  // Main game loop
+  // Container bounce animation
+  const triggerContainerBounce = useCallback(() => {
+    animationManager.createAnimation(
+      'container-bounce',
+      1, 1.2, GAME_CONFIG.ANIMATIONS.ITEM_CAUGHT_BOUNCE, EASING.easeOutBounce
+    );
+  }, []);
+
+  // Screen shake effect
+  const triggerScreenShake = useCallback((intensity: number = 10) => {
+    animationManager.createScreenShake(intensity, GAME_CONFIG.ANIMATIONS.SCREEN_SHAKE);
+  }, []);
+
+  // Flash effect
+  const triggerFlash = useCallback((color: string, duration: number = 300) => {
+    setFlashEffect({ show: true, color, duration });
+    setTimeout(() => {
+      setFlashEffect({ show: false, color: '', duration: 0 });
+    }, duration);
+  }, []);
+
+  // Particle burst effect
+  const triggerParticleBurst = useCallback((x: number, y: number, color: string) => {
+    animationManager.createParticleBurst(x, y, color, 15);
+  }, []);
+
+
+  // Main game loop with optimizations
   const gameLoop = useCallback(() => {
     if (!gameActive) return;
     
-    const { GAME_DURATION, SPAWN_INTERVAL, CONTAINER_WIDTH, CONTAINER_HEIGHT } = getGameConstants();
     const now = performance.now();
+    const deltaTime = now - lastFrameTime.current;
+    lastFrameTime.current = now;
+    
+    const { GAME_DURATION, SPAWN_INTERVAL, CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
     const elapsed = now - gameStartTime.current;
     const currentTimeLeft = Math.max(0, (GAME_DURATION - elapsed) / 1000);
     
@@ -208,76 +283,104 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       lastSpawnTime.current = now;
     }
     
-    // Update items
-    setItems(prevItems => {
-      const canvas = canvasRef.current;
-      if (!canvas) return prevItems;
+    // Update animations
+    animationManager.updateAnimations();
+    
+    // Update container scale from animation
+    const containerBounceScale = animationManager.getAnimationValue('container-bounce') || 1;
+    setContainerScale(containerBounceScale);
+    
+    // Update screen shake
+    const shakeOffset = animationManager.getScreenShakeOffset();
+    setScreenShake(shakeOffset);
+    
+    // Update items using object pool
+    const activeItems = gameItemPool.getActiveObjects();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    for (let i = activeItems.length - 1; i >= 0; i--) {
+      const item = activeItems[i];
       
-      return prevItems.filter(item => {
-        // Move item down
-        item.y += item.speed;
+      // Update item spawn animation
+      const spawnScale = animationManager.getAnimationValue(`item-spawn-${item.id}`) || 1;
+      item.scale = spawnScale;
+      item.alpha = spawnScale;
+      
+      // Move item down
+      item.y += item.speed;
+      
+      // Check collision with container
+      const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
+      const itemBottom = item.y + item.height;
+      const itemCenterX = item.x + item.width / 2;
+      const containerLeft = containerX;
+      const containerRight = containerX + CONTAINER_WIDTH;
+      
+      // Item caught by container
+      if (itemBottom >= containerY && 
+          itemBottom <= containerY + CONTAINER_HEIGHT &&
+          itemCenterX >= containerLeft && 
+          itemCenterX <= containerRight) {
         
-        // Check collision with container
-        const { CONTAINER_BOTTOM_OFFSET } = getGameConstants();
-        const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
-        const itemBottom = item.y + item.height;
-        const itemCenterX = item.x + item.width / 2;
-        const containerLeft = containerX;
-        const containerRight = containerX + CONTAINER_WIDTH;
+        statsRef.current.itemsCaught++;
         
-        // Item caught by container
-        if (itemBottom >= containerY && 
-            itemBottom <= containerY + CONTAINER_HEIGHT &&
-            itemCenterX >= containerLeft && 
-            itemCenterX <= containerRight) {
+        if (item.type === 'recyclable') {
+          const newScore = score + GAME_CONFIG.SCORE_PER_CORRECT;
+          setScore(newScore);
+          onScoreChange(newScore);
+          statsRef.current.correctCatches++;
+          addScoreAnimation(item.x + item.width / 2, item.y, GAME_CONFIG.SCORE_PER_CORRECT, true);
           
-          statsRef.current.itemsCaught++;
+          // Trigger positive feedback
+          triggerContainerBounce();
+          triggerParticleBurst(item.x + item.width / 2, item.y, '#22C55E');
+          triggerFlash('#22C55E', 200);
+        } else {
+          const newScore = Math.max(0, score - GAME_CONFIG.PENALTY_PER_WRONG);
+          setScore(newScore);
+          onScoreChange(newScore);
+          statsRef.current.wrongCatches++;
+          addScoreAnimation(item.x + item.width / 2, item.y, -GAME_CONFIG.PENALTY_PER_WRONG, false);
           
-          if (item.type === 'recyclable') {
-            const newScore = score + 20;
-            setScore(newScore);
-            onScoreChange(newScore);
-            statsRef.current.correctCatches++;
-            addScoreAnimation(item.x + item.width / 2, item.y, 20, true);
-          } else {
-            const newScore = Math.max(0, score - 20);
-            setScore(newScore);
-            onScoreChange(newScore);
-            statsRef.current.wrongCatches++;
-            addScoreAnimation(item.x + item.width / 2, item.y, -10, false);
-          }
-          
-          return false; // Remove caught item
+          // Trigger negative feedback
+          triggerScreenShake(15);
+          triggerFlash('#EF4444', 300);
         }
         
+        // Return item to pool
+        gameItemPool.release(item);
+      } else if (item.y > canvas.height + 100) {
         // Remove items that fell off screen
-        return item.y < canvas.height + 100;
-      });
-    });
+        gameItemPool.release(item);
+      }
+    }
     
     // Update score animations
-    setScoreAnimations(prevAnimations => {
-      const now = performance.now();
-      return prevAnimations.filter(animation => {
-        const elapsed = now - animation.startTime;
-        const duration = 1500; // 1.5 seconds
-        
-        if (elapsed >= duration) {
-          return false; // Remove expired animation
-        }
-        
-        // Update animation properties
-        const progress = elapsed / duration;
-        animation.y -= 2; // Float upward
-        animation.opacity = 1 - progress; // Fade out
-        
-        return true;
-      });
-    });
+    const activeScoreAnimations = scoreAnimationPool.getActiveObjects();
+    for (let i = activeScoreAnimations.length - 1; i >= 0; i--) {
+      const animation = activeScoreAnimations[i];
+      const elapsed = now - animation.startTime;
+      const duration = 1500; // 1.5 seconds
+      
+      if (elapsed >= duration) {
+        scoreAnimationPool.release(animation);
+        continue;
+      }
+      
+      // Update animation properties
+      const progress = elapsed / duration;
+      animation.y += animation.velocityY; // Float upward
+      animation.opacity = 1 - progress; // Fade out
+      
+      // Update scale from animation
+      const popScale = animationManager.getAnimationValue(`score-pop-${animation.id}`) || 1;
+      animation.scale = popScale;
+    }
     
     // Continue game loop
     gameLoopRef.current = requestAnimationFrame(gameLoop);
-  }, [gameActive, score, containerX, spawnItem, addScoreAnimation, onScoreChange, onTimeChange, onGameEnd]);
+  }, [gameActive, score, containerX, spawnItem, addScoreAnimation, triggerContainerBounce, triggerScreenShake, triggerFlash, triggerParticleBurst, onScoreChange, onTimeChange, onGameEnd]);
 
   // Start/stop game loop
   useEffect(() => {
@@ -338,7 +441,12 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    const { CONTAINER_WIDTH, CONTAINER_HEIGHT, ITEM_SIZE } = getGameConstants();
+    const { CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
+    const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
+    
+    // Apply screen shake offset
+    ctx.save();
+    ctx.translate(screenShake.x, screenShake.y);
     
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -372,33 +480,37 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     
-    // Draw container with better visibility
-    const { CONTAINER_BOTTOM_OFFSET } = getGameConstants();
-    const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
     
-    // Draw falling items with better visibility
-    items.forEach(item => {
+    // Draw falling items with animations
+    const activeItems = gameItemPool.getActiveObjects();
+    activeItems.forEach(item => {
+      ctx.save();
+      
+      // Apply item transformations
+      const centerX = item.x + item.width / 2;
+      const centerY = item.y + item.height / 2;
+      ctx.translate(centerX, centerY);
+      ctx.scale(item.scale, item.scale);
+      ctx.globalAlpha = item.alpha;
+      ctx.rotate(item.rotation);
+      ctx.translate(-centerX, -centerY);
+      
       const itemImage = gameAssets.getAsset(item.assetName);
       
       if (itemImage) {
-        // Draw image
         ctx.drawImage(itemImage, item.x, item.y, item.width, item.height);
       } else {
-        // Fallback to colored rectangles if image not loaded
-        // Item shadow - more prominent
+        // Fallback rendering
         ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
         ctx.fillRect(item.x + 3, item.y + 3, item.width, item.height);
         
-        // Item body - brighter colors
         ctx.fillStyle = item.type === 'recyclable' ? '#2563EB' : '#DC2626';
         ctx.fillRect(item.x, item.y, item.width, item.height);
         
-        // Item border - thicker
         ctx.strokeStyle = item.type === 'recyclable' ? '#1D4ED8' : '#B91C1C';
         ctx.lineWidth = 2;
         ctx.strokeRect(item.x, item.y, item.width, item.height);
         
-        // Item label - larger font
         ctx.fillStyle = 'white';
         ctx.font = 'bold 12px Arial';
         ctx.textAlign = 'center';
@@ -408,16 +520,27 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           item.y + item.height / 2 + 4
         );
       }
+      
+      ctx.restore();
     });
     
     // Draw ground - much thicker and more visible (drawn last so it appears on top)
     ctx.fillStyle = '#2D3748';
     ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
     
-    // Draw score animations
-    scoreAnimations.forEach(animation => {
+    // Draw score animations with enhanced effects
+    const activeScoreAnimations = scoreAnimationPool.getActiveObjects();
+    activeScoreAnimations.forEach(animation => {
       ctx.save();
       ctx.globalAlpha = animation.opacity;
+      
+      // Apply scale animation
+      const centerX = animation.x;
+      const centerY = animation.y;
+      ctx.translate(centerX, centerY);
+      ctx.scale(animation.scale, animation.scale);
+      ctx.translate(-centerX, -centerY);
+      
       ctx.fillStyle = animation.color;
       ctx.font = 'bold 24px Arial';
       ctx.textAlign = 'center';
@@ -431,17 +554,67 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       ctx.restore();
     });
     
-    // Draw container
+    // Draw particles
+    const particles = animationManager.getParticles();
+    particles.forEach(particle => {
+      ctx.save();
+      ctx.globalAlpha = particle.alpha;
+      ctx.fillStyle = particle.color;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    
+    // Draw container with animations
+    ctx.save();
+    const containerCenterX = containerX + CONTAINER_WIDTH / 2;
+    const containerCenterY = containerY + CONTAINER_HEIGHT / 2;
+    ctx.translate(containerCenterX, containerCenterY);
+    ctx.scale(containerScale, containerScale);
+    ctx.rotate(containerRotation);
+    ctx.translate(-containerCenterX, -containerCenterY);
+    
     const containerImage = gameAssets.getAsset('container');
     if (containerImage) {
       ctx.drawImage(containerImage, containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+    } else {
+      // Fallback container
+      ctx.fillStyle = '#4A5568';
+      ctx.fillRect(containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+      ctx.strokeStyle = '#2D3748';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+    }
+    ctx.restore();
+    
+    // Draw flash effect
+    if (flashEffect.show) {
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = flashEffect.color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
     }
     
-  }, [containerX, items, scoreAnimations, canvasSize, assetsLoaded]);
+    ctx.restore(); // Restore screen shake transform
+    
+  }, [containerX, containerScale, containerRotation, screenShake, flashEffect, canvasSize, backgroundImage]);
+
+  if (showLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-400 via-blue-500 to-green-600">
+        <div className="text-center text-white">
+          <div className="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-xl font-medium">Loading game assets...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <canvas
-      ref={canvasRef}
+      ref={setCanvasRef}
       className="w-full h-full cursor-grab active:cursor-grabbing touch-none"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}

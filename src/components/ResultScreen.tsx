@@ -18,6 +18,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 }) => {
   const strings = localization.getStrings();
   const [isMobile, setIsMobile] = useState(false);
+  const [displayScore, setDisplayScore] = useState(0);
 
   // Detect mobile device
   useEffect(() => {
@@ -30,6 +31,30 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    // Score reveal animation
+    const animateScore = () => {
+      const duration = 2000; // 2 seconds
+      const startTime = performance.now();
+      
+      const updateScore = () => {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        
+        setDisplayScore(Math.floor(finalScore * easedProgress));
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateScore);
+        }
+      };
+      
+      requestAnimationFrame(updateScore);
+    };
+    
+    animateScore();
+  }, [finalScore]);
 
   useEffect(() => {
     // Trigger confetti animation
@@ -140,9 +165,14 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
               <p className="text-base mb-2" style={{ color: '#48723a' }}>
                 {strings.youCollected}
               </p>
-              <div className="text-5xl font-bold mb-2" style={{ color: '#48723a' }}>
-                {finalScore} <span className="font-black">DKK</span>
-              </div>
+              <motion.div 
+                className="text-5xl font-bold mb-2" 
+                style={{ color: '#48723a' }}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 0.5, delay: 1 }}
+              >
+                {displayScore} <span className="font-black">DKK</span>
+              </motion.div>
             </div>
             
             {/* Prize Information */}
@@ -172,21 +202,27 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             
             {/* Buttons */}
             <div className="space-y-3">
-              <button
+              <motion.button
                 onClick={onShowLeaderboard}
-                className="w-full py-3 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 active:scale-95"
+                className="w-full py-3 rounded-2xl font-semibold text-white transition-all"
                 style={{ backgroundColor: '#c6db91' }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 {strings.scoreboard}
-              </button>
+              </motion.button>
               
-              <button
+              <motion.button
                 onClick={onPlayAgain}
-                className="w-full py-3 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 active:scale-95"
+                className="w-full py-3 rounded-2xl font-semibold text-white transition-all"
                 style={{ backgroundColor: '#77a224' }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 {strings.playAgain}
-              </button>
+              </motion.button>
             </div>
           </motion.div>
           

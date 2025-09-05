@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameCanvas } from './GameCanvas';
 import { localization } from '../lib/localization';
+import { LoadingScreen } from './LoadingScreen';
 
 interface GameplayScreenProps {
   score: number;
@@ -42,7 +43,11 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
       </div>
 
       {/* Game Canvas Container */}
-      <div className="absolute inset-0 pt-16 md:pt-20" style={{ height: '100vh', width: '100vw' }}>
+      <div className="absolute inset-0 pt-16 md:pt-20" style={{ 
+        height: '100vh', 
+        width: '100vw',
+        overflow: 'hidden'
+      }}>
         <GameCanvas
           onScoreChange={onScoreChange}
           onTimeChange={onTimeChange}

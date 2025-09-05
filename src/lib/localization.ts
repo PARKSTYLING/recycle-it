@@ -69,6 +69,7 @@ interface LocalizedStrings {
   player: string;
   score: string;
   backToStart: string;
+  noPlayersToday: string;
 }
 
 const danishStrings: LocalizedStrings = {
@@ -173,7 +174,8 @@ Ansvar og begrænsninger
   rank: "Plads",
   player: "Spiller",
   score: "Score",
-  backToStart: "Tilbage til Start"
+  backToStart: "Tilbage til Start",
+  noPlayersToday: "Ingen spillere i dag endnu"
 };
 
 const englishStrings: LocalizedStrings = {
@@ -278,7 +280,8 @@ Responsibility and limitations
   rank: "Rank",
   player: "Player",
   score: "Score",
-  backToStart: "Back to Start"
+  backToStart: "Back to Start",
+  noPlayersToday: "No players today yet"
 };
 
 class LocalizationManager {
