@@ -430,6 +430,18 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     const { CONTAINER_WIDTH, CONTAINER_HEIGHT, CONTAINER_BOTTOM_OFFSET } = getGameConstants();
     const containerY = canvas.height - CONTAINER_HEIGHT - CONTAINER_BOTTOM_OFFSET;
     
+    // Debug logging for mobile container positioning
+    if (window.innerWidth < 768 && gameActive) {
+      console.log('Mobile Container Debug:', {
+        canvasHeight: canvas.height,
+        containerHeight: CONTAINER_HEIGHT,
+        bottomOffset: CONTAINER_BOTTOM_OFFSET,
+        containerY: containerY,
+        containerX: containerX,
+        isVisible: containerY > 0 && containerY < canvas.height
+      });
+    }
+    
     // Apply screen shake offset
     ctx.save();
     ctx.translate(screenShake.x, screenShake.y);
@@ -552,7 +564,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       ctx.restore();
     });
     
-    // Draw container with animations
+    // Draw container with animations - ensure it's drawn last for highest z-index
     ctx.save();
     const containerCenterX = containerX + CONTAINER_WIDTH / 2;
     const containerCenterY = containerY + CONTAINER_HEIGHT / 2;
@@ -561,16 +573,27 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     ctx.rotate(containerRotation);
     ctx.translate(-containerCenterX, -containerCenterY);
     
+    // Add a subtle glow effect to make container more visible on mobile
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 2;
+    
     const containerImage = gameAssets.getAsset('container');
     if (containerImage) {
       ctx.drawImage(containerImage, containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
     } else {
-      // Fallback container
+      // Enhanced fallback container with better visibility
       ctx.fillStyle = '#4A5568';
       ctx.fillRect(containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
       ctx.strokeStyle = '#2D3748';
       ctx.lineWidth = 3;
       ctx.strokeRect(containerX, containerY, CONTAINER_WIDTH, CONTAINER_HEIGHT);
+      
+      // Add inner highlight for better visibility
+      ctx.strokeStyle = '#6B7280';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(containerX + 2, containerY + 2, CONTAINER_WIDTH - 4, CONTAINER_HEIGHT - 4);
     }
     ctx.restore();
     
@@ -601,7 +624,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       style={{ 
         touchAction: 'none',
         display: 'block',
-        background: 'transparent'
+        background: 'transparent',
+        position: 'relative',
+        zIndex: 1 // Ensure canvas content is properly layered
       }}
     />
   );

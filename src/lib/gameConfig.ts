@@ -16,12 +16,13 @@ export const GAME_CONFIG = {
   FALL_SPEED_MOBILE: 4,
   FALL_SPEED_DESKTOP: 4,
   
-  // Container - Better sizing for visibility
+  // Container - Better sizing for visibility and mobile positioning
   CONTAINER_WIDTH_MOBILE: 80,
   CONTAINER_WIDTH_DESKTOP: 100,
   CONTAINER_HEIGHT_MOBILE: 70,
   CONTAINER_HEIGHT_DESKTOP: 85,
-  CONTAINER_BOTTOM_OFFSET_MOBILE: 15,
+  // Increased bottom offset for mobile to ensure visibility above safe areas
+  CONTAINER_BOTTOM_OFFSET_MOBILE: 60, // Increased from 15 to 60 for better mobile visibility
   CONTAINER_BOTTOM_OFFSET_DESKTOP: 25,
   
   // Items - Better sizing for visibility
