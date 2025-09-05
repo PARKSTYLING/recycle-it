@@ -19,12 +19,15 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
 }) => {
   const strings = localization.getStrings();
 
+  const isMobile = window.innerWidth < 768;
+  
   return (
     <div className="fixed inset-0 overflow-hidden" style={{
-      backgroundImage: 'url(/images/UI/game_background.jpg)',
+      backgroundImage: `url(/images/UI/${isMobile ? 'secoundary_background_mobile.jpg' : 'secoundary_background_desktop.jpg'})`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat'
+      backgroundPosition: 'center top',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: '#2D3748'
     }}>
       {/* HUD */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-black bg-opacity-80 text-white p-3 md:p-4">

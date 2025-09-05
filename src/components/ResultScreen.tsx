@@ -64,7 +64,17 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
   }, []);
 
   return (
-    <div className="h-screen w-screen flex flex-col relative overflow-hidden">
+    <div className="h-screen w-screen flex flex-col relative overflow-hidden" style={{ 
+      border: 'none', 
+      backgroundColor: '#2D3748',
+      margin: 0,
+      padding: 0,
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    }}>
       {/* Background Video */}
       <video
         className="absolute inset-0 w-full h-full object-cover z-0"
@@ -73,6 +83,16 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         muted
         playsInline
         poster="/images/UI/Kvinde_med_bier.jpg"
+        style={{ 
+          objectPosition: 'center top',
+          width: '100%',
+          height: '100%',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: '#2D3748'
+        }}
       >
         <source 
           src={isMobile ? "/videos/UI/background_movie_mobile.mp4" : "/videos/UI/background_movie_desktop.mp4"} 
@@ -84,16 +104,16 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
           style={{
             backgroundImage: 'url(/images/UI/Kvinde_med_bier.jpg)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'center top',
             backgroundRepeat: 'no-repeat'
           }}
         />
       </video>
       
-      {/* Content Container */}
-      <div className="flex flex-col h-full relative z-10 px-4 py-6">
+      {/* Content Container - extends to full height without padding */}
+      <div className="flex flex-col h-full relative z-10 px-4" style={{ border: 'none' }}>
         {/* PARK Logo at top */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center pt-6 pb-6">
           <img 
             src="/images/UI/PARK_logo_white.png"
             alt="PARK Logo"
@@ -102,7 +122,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center space-y-4">
+        <div className="flex-1 flex flex-col justify-center space-y-4 pb-6">
           {/* Main Results Card */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

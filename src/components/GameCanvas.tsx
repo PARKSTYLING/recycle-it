@@ -49,6 +49,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const [gameActive, setGameActive] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
   
   // Game constants - responsive sizes
   const getGameConstants = () => {
@@ -75,6 +76,16 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   useEffect(() => {
     const loadAssets = async () => {
       await gameAssets.loadAllAssets();
+      
+      // Load background image
+      const isMobile = window.innerWidth < 768;
+      const backgroundImg = new Image();
+      backgroundImg.onload = () => {
+        setBackgroundImage(backgroundImg);
+        console.log('🎨 Background image loaded');
+      };
+      backgroundImg.src = `/images/UI/${isMobile ? 'secoundary_background_mobile.jpg' : 'secoundary_background_desktop.jpg'}`;
+      
       setAssetsLoaded(true);
       console.log('🎨 All assets loaded for game');
     };
@@ -315,7 +326,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   // Touch events
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
     const x = getTouchPosition(e);
     moveContainer(x);
   }, [getTouchPosition, moveContainer]);
@@ -333,23 +343,34 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw background image
-    const backgroundImage = new Image();
-    backgroundImage.src = '/images/UI/game_background.jpg';
-    if (backgroundImage.complete) {
-      ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    // Draw background image - use preloaded image
+    if (backgroundImage) {
+      // Calculate aspect ratio to maintain image proportions
+      const imageAspect = backgroundImage.width / backgroundImage.height;
+      const canvasAspect = canvas.width / canvas.height;
+      
+      let drawWidth, drawHeight, drawX, drawY;
+      
+      if (imageAspect > canvasAspect) {
+        // Image is wider than canvas - fit to height and center horizontally
+        drawHeight = canvas.height;
+        drawWidth = drawHeight * imageAspect;
+        drawX = (canvas.width - drawWidth) / 2;
+        drawY = 0;
+      } else {
+        // Image is taller than canvas - fit to width and align to top
+        drawWidth = canvas.width;
+        drawHeight = drawWidth / imageAspect;
+        drawX = 0;
+        drawY = 0; // Align to top
+      }
+      
+      ctx.drawImage(backgroundImage, drawX, drawY, drawWidth, drawHeight);
     } else {
-      // Fallback gradient while image loads
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, '#87CEEB');
-      gradient.addColorStop(1, '#4682B4');
-      ctx.fillStyle = gradient;
+      // Fallback solid color while image loads
+      ctx.fillStyle = '#2D3748';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    
-    // Draw ground - much thicker and more visible
-    ctx.fillStyle = '#2D3748';
-    ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
     
     // Draw container with better visibility
     const { CONTAINER_BOTTOM_OFFSET } = getGameConstants();
@@ -388,6 +409,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         );
       }
     });
+    
+    // Draw ground - much thicker and more visible (drawn last so it appears on top)
+    ctx.fillStyle = '#2D3748';
+    ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
     
     // Draw score animations
     scoreAnimations.forEach(animation => {

@@ -363,6 +363,22 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             {strings.scoreboard}
           </button>
 
+          {/* Test button - only show in development */}
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={() => onStartGame({ userId: 'test-user', email: 'test@example.com' })}
+              className="w-full text-white py-3 rounded-xl font-bold text-base transition-all transform hover:scale-105 active:scale-95"
+              style={{ 
+                backgroundColor: '#6b7280',
+                ':hover': { backgroundColor: '#4b5563' }
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#4b5563'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#6b7280'}
+            >
+              🎮 Test Game (Skip Form)
+            </button>
+          )}
+
         </div>
         </div>
       </div>

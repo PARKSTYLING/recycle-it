@@ -194,7 +194,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="h-screen w-screen" style={{ backgroundColor: 'transparent', margin: 0, padding: 0 }}>
       {renderScreen()}
     </div>
   );
