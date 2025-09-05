@@ -3,7 +3,6 @@ import { gameAssets } from '../lib/gameAssets';
 import { GAME_CONFIG, getGameConstants } from '../lib/gameConfig';
 import { animationManager, EASING } from '../lib/animationUtils';
 import { gameItemPool, scoreAnimationPool } from '../lib/objectPool';
-import { CustomSplashScreen } from './CustomSplashScreen';
 
 interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -40,7 +39,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const [gameActive, setGameActive] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
-  const [showLoading, setShowLoading] = useState(true);
   
   // Animation states
   const [containerScale, setContainerScale] = useState(1);
@@ -68,11 +66,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           setBackgroundImage(backgroundImg);
         };
         backgroundImg.src = `/images/UI/${isMobile ? 'secoundary_background_mobile.jpg' : 'secoundary_background_desktop.jpg'}`;
-        
-        setShowLoading(false);
       } catch (error) {
         console.error('Failed to load assets:', error);
-        setShowLoading(false);
       }
     };
     
@@ -600,14 +595,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     
   }, [containerX, containerScale, containerRotation, screenShake, flashEffect, canvasSize, backgroundImage]);
 
-  if (showLoading) {
-    return (
-      <CustomSplashScreen
-        onComplete={() => setShowLoading(false)}
-      />
-    );
-  }
-
   return (
     <canvas
       ref={setCanvasRef}
@@ -618,7 +605,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       style={{ 
         touchAction: 'none',
         display: 'block',
-        background: '#87CEEB'
+        background: 'transparent'
       }}
     />
   );
