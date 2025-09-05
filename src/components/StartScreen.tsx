@@ -24,6 +24,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
   const [showTerms, setShowTerms] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -35,6 +37,51 @@ export const StartScreen: React.FC<StartScreenProps> = ({
     
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Keyboard detection for mobile
+  useEffect(() => {
+    if (!isMobile) return;
+
+    let initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    
+    const handleViewportChange = () => {
+      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const heightDifference = initialViewportHeight - currentHeight;
+      
+      // Debug logging for keyboard detection
+      console.log('Viewport change:', {
+        initialHeight: initialViewportHeight,
+        currentHeight: currentHeight,
+        heightDifference: heightDifference,
+        isKeyboardOpen: heightDifference > 150
+      });
+      
+      // If height decreased significantly, keyboard is likely open
+      if (heightDifference > 150) {
+        setIsKeyboardOpen(true);
+        setKeyboardHeight(heightDifference);
+      } else {
+        setIsKeyboardOpen(false);
+        setKeyboardHeight(0);
+      }
+    };
+
+    // Listen for viewport changes (keyboard open/close)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+    } else {
+      // Fallback for older browsers
+      window.addEventListener('resize', handleViewportChange);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportChange);
+      } else {
+        window.removeEventListener('resize', handleViewportChange);
+      }
+    };
+  }, [isMobile]);
 
   const handleLocaleChange = (locale: string) => {
     setCurrentLocale(locale);
@@ -49,6 +96,20 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         delete newErrors[field];
         return newErrors;
       });
+    }
+  };
+
+  // Scroll to focused input when keyboard opens
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (isMobile) {
+      // Small delay to ensure keyboard is fully open
+      setTimeout(() => {
+        e.target.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+      }, 300);
     }
   };
 
@@ -158,12 +219,22 @@ export const StartScreen: React.FC<StartScreenProps> = ({
         />
       </div>
       
-      {/* Scrollable content area */}
-      <div className="flex-1 relative z-20 overflow-y-auto" style={{ 
-        WebkitOverflowScrolling: 'touch',
-        scrollBehavior: 'smooth',
-        overscrollBehavior: 'contain'
-      }}>
+      {/* Scrollable content area - adjusts height when keyboard is open */}
+      <div 
+        className="flex-1 relative z-20 overflow-y-auto" 
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth',
+          overscrollBehavior: 'contain',
+          // Adjust height when keyboard is open on mobile
+          height: isMobile && isKeyboardOpen 
+            ? `calc(100vh - ${keyboardHeight}px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 8rem)` 
+            : 'auto',
+          maxHeight: isMobile && isKeyboardOpen 
+            ? `calc(100vh - ${keyboardHeight}px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 8rem)` 
+            : 'none'
+        }}
+      >
         <div className="flex items-start justify-center p-4 py-8" style={{
           paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))'
         }}>
@@ -197,8 +268,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             onClick={() => handleLocaleChange('da')}
             className={`p-1 rounded ${currentLocale === 'da' ? 'ring-2' : ''}`}
             style={{ 
-              ringColor: currentLocale === 'da' ? '#77a224' : 'transparent'
-            }}
+              '--tw-ring-color': currentLocale === 'da' ? '#77a224' : 'transparent'
+            } as React.CSSProperties}
           >
             <img 
               src="/images/flags/da_flag.png" 
@@ -210,8 +281,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
             onClick={() => handleLocaleChange('en')}
             className={`p-1 rounded ${currentLocale === 'en' ? 'ring-2' : ''}`}
             style={{ 
-              ringColor: currentLocale === 'en' ? '#77a224' : 'transparent'
-            }}
+              '--tw-ring-color': currentLocale === 'en' ? '#77a224' : 'transparent'
+            } as React.CSSProperties}
           >
             <img 
               src="/images/flags/en_flag.png" 
@@ -235,6 +306,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 setName(e.target.value);
                 clearError('name');
               }}
+              onFocus={handleInputFocus}
               className={`w-full px-4 py-3 md:py-2 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -261,6 +333,7 @@ export const StartScreen: React.FC<StartScreenProps> = ({
                 setEmail(e.target.value);
                 clearError('email');
               }}
+              onFocus={handleInputFocus}
               className={`w-full px-4 py-3 md:py-2 border rounded-lg focus:ring-2 focus:border-transparent text-base md:text-sm ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
