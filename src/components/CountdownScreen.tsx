@@ -64,7 +64,9 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
         scrollBehavior: 'smooth',
         overscrollBehavior: 'contain'
       }}>
-        <div className="flex flex-col justify-between text-white p-6 md:p-8 min-h-full">
+        <div className="flex flex-col justify-between text-white p-6 md:p-8 min-h-full" style={{
+          paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))'
+        }}>
         
         {/* Top Section - PARK Logo */}
         <div className="flex justify-center pt-8 md:pt-12">

@@ -54,7 +54,7 @@ export const AttractLoop: React.FC<AttractLoopProps> = ({ isVisible, onDismiss }
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6">Recycle It!</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6">Bottle drop</h1>
           <p className="text-2xl md:text-3xl font-medium mb-6 md:mb-8">{strings.tapToPlay}</p>
           
           {/* Tap Indicator */}

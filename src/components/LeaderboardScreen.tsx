@@ -104,7 +104,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
 
   return (
     <div 
-      className="h-screen w-screen flex items-center justify-center relative overflow-hidden"
+      className="h-screen w-screen flex flex-col relative overflow-hidden"
       style={{
         backgroundImage: `url(/images/UI/${isMobile ? 'primary_background_mobile.jpg' : 'primary_background_desktop.jpg'})`,
         backgroundSize: 'cover',
@@ -119,21 +119,25 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
       {/* Dark overlay for better text readability */}
       <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
       
-      {/* PARK Logo at top */}
-      <div className="absolute top-12 left-1/2 transform -translate-x-1/2 z-30">
+      {/* PARK Logo at top - always visible */}
+      <div className="flex-shrink-0 flex justify-center pt-8 pb-4 relative z-30">
         <img 
           src="/images/UI/PARK_logo_white.png"
           alt="PARK Logo"
-          className="h-12 md:h-16 w-auto object-contain"
+          className="h-12 w-auto object-contain"
         />
       </div>
       
-      <div className="relative z-20 h-full overflow-y-auto p-4 md:p-8" style={{ 
+      {/* Scrollable content area */}
+      <div className="flex-1 relative z-20 overflow-y-auto" style={{ 
         WebkitOverflowScrolling: 'touch',
         scrollBehavior: 'smooth',
         overscrollBehavior: 'contain'
       }}>
-        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto flex flex-col min-h-full">
+        <div className="flex items-start justify-center p-4 py-8" style={{
+          paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))'
+        }}>
+          <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6 flex-shrink-0">
           <button
@@ -197,6 +201,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
             </div>
           )}
         </div>
+          </div>
         </div>
       </div>
     </div>

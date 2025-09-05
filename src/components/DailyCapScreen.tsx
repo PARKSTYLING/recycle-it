@@ -25,7 +25,9 @@ export const DailyCapScreen: React.FC<DailyCapScreenProps> = ({
         scrollBehavior: 'smooth',
         overscrollBehavior: 'contain'
       }}>
-        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto text-center min-h-full flex flex-col justify-center">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto text-center min-h-full flex flex-col justify-center mb-8" style={{
+          marginBottom: 'calc(6rem + env(safe-area-inset-bottom))'
+        }}>
         {/* Icon */}
         <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
           <Clock className="text-orange-600" size={32} />

@@ -145,7 +145,9 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         scrollBehavior: 'smooth',
         overscrollBehavior: 'contain'
       }}>
-        <div className="flex flex-col min-h-full px-4">
+        <div className="flex flex-col min-h-full px-4" style={{
+          paddingBottom: 'calc(6rem + env(safe-area-inset-bottom))'
+        }}>
         {/* PARK Logo at top */}
         <div className="flex justify-center pt-6 pb-6">
           <img 
