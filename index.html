@@ -49,49 +49,213 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #22C55E, #3B82F6);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         color: white;
         font-family: system-ui, sans-serif;
+        overflow: hidden;
       }
       
-      .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-top: 4px solid white;
+      .loading-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+      
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 2;
+      }
+      
+      .loading-content {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      
+      .loading-logo {
+        height: 64px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 48px;
+        animation: fadeInDown 1s ease-out;
+      }
+      
+      .loading-text {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 16px;
+        animation: fadeInUp 0.6s ease-out 1s both;
+      }
+      
+      .loading-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        animation: fadeInUp 0.6s ease-out 1.5s both;
+      }
+      
+      .loading-dot {
+        width: 12px;
+        height: 12px;
+        background: white;
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: dotPulse 1.5s infinite;
       }
       
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      .loading-dot:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+      
+      .loading-dot:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+      
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes dotPulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 1;
+        }
+      }
+      
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .loading-logo {
+          height: 48px;
+          margin-bottom: 32px;
+        }
+        
+        .loading-text {
+          font-size: 20px;
+        }
+        
+        .loading-dot {
+          width: 10px;
+          height: 10px;
+        }
       }
     </style>
   </head>
   <body>
     <div id="loading">
-      <div class="text-center">
-        <div class="loading-spinner mx-auto mb-4"></div>
-        <div class="text-xl font-bold">Loading Recycle It!</div>
+      <!-- Video Background -->
+      <video class="loading-video" autoplay muted loop playsinline>
+        <source src="/videos/UI/background_movie_desktop.mp4" type="video/mp4" media="(min-width: 768px)">
+        <source src="/videos/UI/background_movie_mobile.mp4" type="video/mp4" media="(max-width: 767px)">
+      </video>
+      
+      <!-- Dark Overlay -->
+      <div class="loading-overlay"></div>
+      
+      <!-- Content -->
+      <div class="loading-content">
+        <!-- PARK Logo -->
+        <img src="/images/UI/PARK_logo_white.png" alt="PARK Logo" class="loading-logo">
+        
+        <!-- Loading Text -->
+        <div class="loading-text">Loading</div>
+        
+        <!-- Animated Dots -->
+        <div class="loading-dots">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
       </div>
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Hide loading screen when React app loads
+      // Smooth transition from loading screen to React app
+      let appLoaded = false;
+      let minLoadingTime = 2000; // Minimum loading time for smooth transition
+      
+      // Function to hide loading screen with smooth transition
+      function hideLoadingScreen() {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          // Add fade-out animation
+          loading.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+          loading.style.opacity = '0';
+          loading.style.transform = 'scale(1.05)';
+          
+          // Remove from DOM after animation
+          setTimeout(() => {
+            loading.remove();
+          }, 800);
+        }
+      }
+      
+      // Hide loading screen when React app is ready
       window.addEventListener('DOMContentLoaded', () => {
+        const startTime = Date.now();
+        
+        // Wait for minimum loading time
         setTimeout(() => {
-          const loading = document.getElementById('loading');
-          if (loading) {
-            loading.style.opacity = '0';
-            setTimeout(() => loading.remove(), 300);
-          }
-        }, 1000);
+          const elapsed = Date.now() - startTime;
+          const remainingTime = Math.max(0, minLoadingTime - elapsed);
+          
+          setTimeout(() => {
+            if (appLoaded) {
+              hideLoadingScreen();
+            } else {
+              // If app hasn't loaded yet, wait for it
+              const checkAppLoaded = setInterval(() => {
+                if (appLoaded) {
+                  clearInterval(checkAppLoaded);
+                  hideLoadingScreen();
+                }
+              }, 100);
+            }
+          }, remainingTime);
+        }, 500);
+      });
+      
+      // Listen for React app ready signal
+      window.addEventListener('reactAppReady', () => {
+        appLoaded = true;
       });
       
       // Register service worker for PWA functionality

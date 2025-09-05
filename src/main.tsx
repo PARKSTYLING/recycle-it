@@ -16,3 +16,8 @@ root.render(
     <App />
   </StrictMode>
 );
+
+// Signal that React app is ready for smooth transition
+setTimeout(() => {
+  window.dispatchEvent(new CustomEvent('reactAppReady'));
+}, 100);

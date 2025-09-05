@@ -60,7 +60,12 @@ export const PreStartScreen: React.FC<PreStartScreenProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <motion.div 
+      className="fixed inset-0 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       {/* Background Video */}
       <video
         ref={videoRef}
@@ -199,6 +204,6 @@ export const PreStartScreen: React.FC<PreStartScreenProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

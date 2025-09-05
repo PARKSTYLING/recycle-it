@@ -31,6 +31,7 @@ const App: React.FC = () => {
     resetTimer();
   }, [currentScreen, resetTimer]);
 
+
   const handleStartGame = async (userData?: { userId: string; email: string }) => {
     setScore(0);
     setTimeLeft(60);

@@ -3,6 +3,7 @@ import { gameAssets } from '../lib/gameAssets';
 import { GAME_CONFIG, getGameConstants } from '../lib/gameConfig';
 import { animationManager, EASING } from '../lib/animationUtils';
 import { gameItemPool, scoreAnimationPool } from '../lib/objectPool';
+import { CustomSplashScreen } from './CustomSplashScreen';
 
 interface GameCanvasProps {
   onScoreChange: (score: number) => void;
@@ -601,12 +602,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
   if (showLoading) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-400 via-blue-500 to-green-600">
-        <div className="text-center text-white">
-          <div className="animate-spin w-16 h-16 border-4 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-xl font-medium">Loading game assets...</p>
-        </div>
-      </div>
+      <CustomSplashScreen
+        onComplete={() => setShowLoading(false)}
+      />
     );
   }
 
