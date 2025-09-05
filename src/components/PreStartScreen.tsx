@@ -64,7 +64,13 @@ export const PreStartScreen: React.FC<PreStartScreenProps> = ({
       className="fixed inset-0 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)'
+      }}
     >
       {/* Background Video */}
       <video
@@ -86,7 +92,12 @@ export const PreStartScreen: React.FC<PreStartScreenProps> = ({
       <div className="absolute inset-0 bg-black bg-opacity-30 z-10"></div>
 
       {/* Content */}
-      <div className="relative z-20 h-full flex flex-col items-center justify-between text-white p-6 md:p-8">
+      <div className="relative z-20 h-full overflow-y-auto" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="flex flex-col items-center justify-between text-white p-6 md:p-8 min-h-full">
         
         {/* Top Logo Section */}
         <div className="flex flex-col items-center pt-12 md:pt-16">
@@ -202,6 +213,7 @@ export const PreStartScreen: React.FC<PreStartScreenProps> = ({
               {currentLocale === 'da' ? 'Swipe for at fortsætte' : 'Swipe to continue'}
             </motion.p>
           </div>
+        </div>
         </div>
       </div>
     </motion.div>

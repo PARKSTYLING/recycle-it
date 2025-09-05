@@ -104,12 +104,16 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
 
   return (
     <div 
-      className="h-screen w-screen flex items-center justify-center p-4 md:p-8 relative"
+      className="h-screen w-screen flex items-center justify-center relative overflow-hidden"
       style={{
         backgroundImage: `url(/images/UI/${isMobile ? 'primary_background_mobile.jpg' : 'primary_background_desktop.jpg'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)'
       }}
     >
       {/* Dark overlay for better text readability */}
@@ -124,7 +128,12 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
         />
       </div>
       
-      <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto max-h-full overflow-hidden relative z-20 flex flex-col">
+      <div className="relative z-20 h-full overflow-y-auto p-4 md:p-8" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto flex flex-col min-h-full">
         {/* Header */}
         <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6 flex-shrink-0">
           <button
@@ -187,6 +196,7 @@ export const LeaderboardScreen: React.FC<LeaderboardScreenProps> = ({
               ))}
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

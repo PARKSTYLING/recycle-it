@@ -38,7 +38,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
   };
 
   return (
-    <div className="fixed inset-0 overflow-hidden">
+    <div className="fixed inset-0 overflow-hidden" style={{
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)'
+    }}>
       {/* Background */}
       <div
         className="absolute inset-0 w-full h-full"
@@ -54,7 +59,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
       <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
 
       {/* Content */}
-      <div className="relative z-20 h-full flex flex-col justify-between text-white p-6 md:p-8">
+      <div className="relative z-20 h-full overflow-y-auto" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="flex flex-col justify-between text-white p-6 md:p-8 min-h-full">
         
         {/* Top Section - PARK Logo */}
         <div className="flex justify-center pt-8 md:pt-12">
@@ -135,32 +145,12 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
               </p>
             </motion.div>
             
-            {/* Post-Game Information */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.3, duration: 0.6 }}
-              className="space-y-2"
-            >
-              <p className="text-lg md:text-xl">
-                {strings.postGameInfo}
-              </p>
-              <p className="text-lg md:text-xl">
-                {strings.postGameInfo2}
-              </p>
-              <p className="text-lg md:text-xl">
-                {strings.postGameInfo3}
-              </p>
-              <p className="text-lg md:text-xl">
-                {strings.postGameInfo4}
-              </p>
-            </motion.div>
             
             {/* Ready Question */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 0.6 }}
+              transition={{ delay: 1.3, duration: 0.6 }}
               className="text-center mt-8"
             >
               <h2 className="text-2xl md:text-3xl font-bold">
@@ -175,7 +165,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
+            transition={{ delay: 1.3, duration: 0.8 }}
           >
             <div className="relative">
               {/* Swipe Track Background */}
@@ -259,6 +249,7 @@ export const CountdownScreen: React.FC<CountdownScreenProps> = ({ onCountdownEnd
               </motion.p>
             </div>
           </motion.div>
+        </div>
         </div>
       </div>
     </div>

@@ -14,8 +14,18 @@ export const DailyCapScreen: React.FC<DailyCapScreenProps> = ({
   const strings = localization.getStrings();
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-br from-orange-400 via-red-500 to-orange-600 flex items-center justify-center p-4 md:p-8">
-      <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto text-center max-h-full overflow-y-auto">
+    <div className="h-screen w-screen bg-gradient-to-br from-orange-400 via-red-500 to-orange-600 flex items-center justify-center overflow-hidden" style={{
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)'
+    }}>
+      <div className="h-full w-full overflow-y-auto p-4 md:p-8" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-md mx-auto text-center min-h-full flex flex-col justify-center">
         {/* Icon */}
         <div className="w-16 h-16 md:w-20 md:h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
           <Clock className="text-orange-600" size={32} />
@@ -46,6 +56,7 @@ export const DailyCapScreen: React.FC<DailyCapScreenProps> = ({
             <Trophy size={16} className="md:w-5 md:h-5" />
             {strings.leaderboard}
           </button>
+        </div>
         </div>
       </div>
     </div>

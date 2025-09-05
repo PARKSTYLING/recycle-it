@@ -98,7 +98,11 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
       top: 0,
       left: 0,
       right: 0,
-      bottom: 0
+      bottom: 0,
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)'
     }}>
       {/* Background Video */}
       <video
@@ -135,8 +139,13 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         />
       </video>
       
-      {/* Content Container - extends to full height without padding */}
-      <div className="flex flex-col h-full relative z-10 px-4" style={{ border: 'none' }}>
+      {/* Scrollable Content Container */}
+      <div className="relative z-10 h-full overflow-y-auto" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="flex flex-col min-h-full px-4">
         {/* PARK Logo at top */}
         <div className="flex justify-center pt-6 pb-6">
           <img 
@@ -147,7 +156,10 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center space-y-4 pb-6">
+        <div className="flex-1 flex flex-col justify-center space-y-4 py-6" style={{ 
+          minHeight: 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 120px)',
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom))'
+        }}>
           {/* Main Results Card */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -259,6 +271,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             </p>
           </motion.div>
         )}
+        </div>
       </div>
     </div>
   );

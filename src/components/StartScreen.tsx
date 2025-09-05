@@ -132,14 +132,18 @@ export const StartScreen: React.FC<StartScreenProps> = ({
 
   return (
     <div 
-      className="h-screen w-screen flex flex-col p-4 relative overflow-hidden"
+      className="h-screen w-screen flex flex-col relative overflow-hidden"
       style={{
         backgroundImage: `url(/images/UI/${isMobile ? 'primary_background_mobile.jpg' : 'primary_background_desktop.jpg'})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         minHeight: '100vh',
-        minWidth: '100vw'
+        minWidth: '100vw',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)'
       }}
     >
       {/* Dark overlay for better text readability */}
@@ -155,9 +159,14 @@ export const StartScreen: React.FC<StartScreenProps> = ({
       </div>
       
       {/* Scrollable content area */}
-      <div className="flex-1 flex items-center justify-center min-h-0 relative z-20">
-        {/* Main content card */}
-        <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm max-h-full overflow-y-auto">
+      <div className="flex-1 relative z-20 overflow-y-auto" style={{ 
+        WebkitOverflowScrolling: 'touch',
+        scrollBehavior: 'smooth',
+        overscrollBehavior: 'contain'
+      }}>
+        <div className="flex items-center justify-center min-h-full p-4">
+          {/* Main content card */}
+          <div className="bg-gray-100 rounded-3xl shadow-2xl p-6 w-full max-w-sm">
         {/* Main offer */}
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold text-green-800 leading-tight">
@@ -418,6 +427,8 @@ export const StartScreen: React.FC<StartScreenProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 };
